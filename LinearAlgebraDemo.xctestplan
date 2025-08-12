@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "42413B8C-EE74-497F-B687-53E0B793BE14",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:LinearAlgebraDemo.xcodeproj",
+        "identifier" : "C42654E12E47E9B400A07B38",
+        "name" : "LinearAlgebraTests"
+      }
+    }
+  ],
+  "version" : 1
+}
