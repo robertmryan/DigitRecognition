@@ -12,7 +12,9 @@ struct LinearAlgebraDemoApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+            #if os(iPad)
                 .statusBar(hidden: true)
+            #endif
         }
     }
 }

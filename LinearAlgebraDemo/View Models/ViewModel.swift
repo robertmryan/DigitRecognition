@@ -9,8 +9,7 @@ import Foundation
 
 @MainActor
 class ViewModel: ObservableObject {
-    @Published var imageBytes: [UInt8]?
-    @Published var digit: UInt8?
+    @Published var imageAndLabel: ImageAndLabel
     @Published var progress: Float?
     @Published var result: [DataPoint] = []
     @Published var error: (any Error)?
@@ -33,6 +32,10 @@ class ViewModel: ObservableObject {
         Vector([0, 0, 0, 0, 0, 0, 0, 0, 1, 0]),
         Vector([0, 0, 0, 0, 0, 0, 0, 0, 0, 1]),
     ]
+
+    init() {
+        imageAndLabel = ImageAndLabel(imageBytes: Array(repeating: 0, count: 28 * 28), digit: nil)
+    }
 
     func loadTests() async {
         do {
@@ -65,8 +68,7 @@ class ViewModel: ObservableObject {
                         let progress = Float(index) / Float(count)
 
                         Task { @MainActor in
-                            self.imageBytes = record.imageBytes
-                            self.digit = record.labelBytes.first
+                            self.imageAndLabel = ImageAndLabel(imageBytes: record.imageBytes, digit: record.labelBytes.first)
                             self.progress = progress
                         }
                     }
@@ -93,10 +95,12 @@ class ViewModel: ObservableObject {
             return
         }
 
-        let imageBytes = imagesAndLabels[imagesAndLabelsIndex].imageBytes
-        self.imageBytes = imageBytes
-        let digit = imagesAndLabels[imagesAndLabelsIndex].digit
-        self.digit = digit
+        testModel(for: imagesAndLabels[imagesAndLabelsIndex])
+    }
+
+    func testModel(for imageAndLabel: ImageAndLabel) {
+        self.imageAndLabel = imageAndLabel
+        let imageBytes = imageAndLabel.imageBytes
 
         let x = Vector(imageBytes.map { Float($0) / 255 })
         guard let model, let biasVector else {
@@ -157,8 +161,7 @@ class ViewModel: ObservableObject {
 
                     try Task.checkCancellation()
                     Task { @MainActor in
-                        self.imageBytes = record.imageBytes
-                        self.digit = record.labelBytes.first
+                        self.imageAndLabel = ImageAndLabel(imageBytes: record.imageBytes, digit: record.labelBytes.first)
                         self.progress = progress
                     }
 

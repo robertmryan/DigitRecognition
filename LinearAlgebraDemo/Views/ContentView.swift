@@ -13,6 +13,11 @@ let poi = OSSignposter(subsystem: "ML", category: .pointsOfInterest)
 struct ContentView: View {
     @StateObject var viewModel = ViewModel()
     @FocusState private var focusedField: Field?
+    @State var updatedImageAndLabel: ImageAndLabel
+
+    init() {
+        updatedImageAndLabel = ImageAndLabel(imageBytes: Array(repeating: 0, count: 28 * 28), digit: nil)
+    }
 
     let columns = Array(repeating: GridItem(.flexible(), spacing: 1), count: 28)
     let spacing: CGFloat = 20
@@ -31,8 +36,12 @@ struct ContentView: View {
 
                 GeometryReader { geometry in
                     HStack(spacing: spacing) {
-                        TrainingDataView(title: viewModel.dataType, imageBytes: viewModel.imageBytes, digit: viewModel.digit)
-                            .frame(width: (geometry.size.width - spacing) / 2)
+                        TrainingDataView(
+                            title: viewModel.dataType,
+                            imageAndLabel: viewModel.imageAndLabel,
+                            updatedImageAndLabel: $updatedImageAndLabel
+                        )
+                        .frame(width: (geometry.size.width - spacing) / 2)
 
                         ChartView(chartData: viewModel.result)
                             .frame(width: (geometry.size.width - spacing) / 2)
@@ -81,6 +90,9 @@ struct ContentView: View {
         .onAppear {
             focusedField = .main
         }
+        .task(id: updatedImageAndLabel) {
+            viewModel.testModel(for: updatedImageAndLabel)
+        }
     }
 
     func previous() {
@@ -102,17 +114,6 @@ struct ContentView: View {
 enum Field {
     case main
 }
-
-struct DataPoint: Hashable {
-    let name: String
-    let value: Float
-}
-
-struct ImageAndLabel: Hashable {
-    let imageBytes: [UInt8]
-    let digit: UInt8
-}
-
 
 #Preview {
     ContentView()

@@ -9,14 +9,8 @@ import SwiftUI
 
 struct TrainingDataView: View {
     let title: String
-    let imageBytes: [UInt8]
-    let digit: UInt8?
-
-    init(title: String, imageBytes: [UInt8]?, digit: UInt8?) {
-        self.title = title
-        self.imageBytes = imageBytes ?? Array(repeating: 0, count: 28 * 28)
-        self.digit = digit
-    }
+    let imageAndLabel: ImageAndLabel
+    @Binding var updatedImageAndLabel: ImageAndLabel
 
     let columns = Array(repeating: GridItem(.flexible(), spacing: 1), count: 28)
     private let digits = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]
@@ -32,23 +26,24 @@ struct TrainingDataView: View {
                 let totalSpacing = spacing * CGFloat(28)
                 let cellSize = (geometry.size.width - totalSpacing) / 28
 
-                ZStack {
-                    ScrollView {
+                ScrollView {
+                    ZStack {
                         LazyVGrid(columns: columns, spacing: spacing) {
-                            ForEach(0..<imageBytes.count, id: \.self) { index in
+                            ForEach(0 ..< imageAndLabel.imageBytes.count, id: \.self) { index in
                                 Rectangle()
-                                    .fill(color(for: imageBytes[index]))
+                                    .fill(color(for: imageAndLabel.imageBytes[index]))
                                     .strokeBorder(Color(.sRGB, white: 0.5, opacity: 1), lineWidth: lineWidth)
                                     .frame(width: cellSize, height: cellSize)
                             }
                         }
                         .border(Color(.sRGB, white: 0.5, opacity: 1), width: lineWidth * 2)
+
+                        DrawingView(imageAndLabel: imageAndLabel, updatedImageAndLabel: $updatedImageAndLabel)
                     }
-                    
                 }
             }
 
-            Text(digit.flatMap { label(for: $0) } ?? "Unknown")
+            Text(imageAndLabel.digit.flatMap { label(for: $0) } ?? "Unknown")
                 .font(.title2)
         }
     }
