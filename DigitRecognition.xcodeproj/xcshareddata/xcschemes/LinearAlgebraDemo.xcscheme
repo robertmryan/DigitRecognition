@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C42654CC2E47BD6100A07B38"
-               BuildableName = "LinearAlgebraDemo.app"
-               BlueprintName = "LinearAlgebraDemo"
-               ReferencedContainer = "container:LinearAlgebraDemo.xcodeproj">
+               BuildableName = "DigitRecognition.app"
+               BlueprintName = "DigitRecognition"
+               ReferencedContainer = "container:DigitRecognition.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -43,7 +43,7 @@
                BlueprintIdentifier = "C42654E12E47E9B400A07B38"
                BuildableName = "LinearAlgebraTests.xctest"
                BlueprintName = "LinearAlgebraTests"
-               ReferencedContainer = "container:LinearAlgebraDemo.xcodeproj">
+               ReferencedContainer = "container:DigitRecognition.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -64,9 +64,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C42654CC2E47BD6100A07B38"
-            BuildableName = "LinearAlgebraDemo.app"
-            BlueprintName = "LinearAlgebraDemo"
-            ReferencedContainer = "container:LinearAlgebraDemo.xcodeproj">
+            BuildableName = "DigitRecognition.app"
+            BlueprintName = "DigitRecognition"
+            ReferencedContainer = "container:DigitRecognition.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -81,9 +81,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C42654CC2E47BD6100A07B38"
-            BuildableName = "LinearAlgebraDemo.app"
-            BlueprintName = "LinearAlgebraDemo"
-            ReferencedContainer = "container:LinearAlgebraDemo.xcodeproj">
+            BuildableName = "DigitRecognition.app"
+            BlueprintName = "DigitRecognition"
+            ReferencedContainer = "container:DigitRecognition.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

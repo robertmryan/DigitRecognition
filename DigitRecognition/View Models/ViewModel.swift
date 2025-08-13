@@ -130,7 +130,7 @@ class ViewModel: ObservableObject {
                 let modelColumns = sequence.imagesHeader.countPerItem // 784 for the 28 × 28 image
                 let modelRows = 10                                    // 10
 
-                let model = SGDSingleLayer.init(inputCount: modelRows, outputCount: modelColumns)
+                let model = SGDSingleLayer(inputVectorSize: modelRows, outputVectorSize: modelColumns)
 
                 var index = 0
 

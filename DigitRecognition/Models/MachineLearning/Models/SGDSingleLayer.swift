@@ -19,9 +19,9 @@ struct SGDSingleLayer: MachineLearningModel {
     /// The model’s learning rate
     let learningRate: Float = 0.01
 
-    init(inputCount: Int, outputCount: Int) {
-        w = Matrix<Float>(repeating: 0.01, rows: inputCount, cols: outputCount)
-        b = Vector<Float>(repeating: 0, count: inputCount)
+    init(inputVectorSize: Int, outputVectorSize: Int) {
+        w = Matrix<Float>(repeating: 0.01, rows: inputVectorSize, cols: outputVectorSize)
+        b = Vector<Float>(repeating: 0, count: inputVectorSize)
     }
 }
 

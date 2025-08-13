@@ -17,14 +17,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		C42654CD2E47BD6100A07B38 /* LinearAlgebraDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LinearAlgebraDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C42654CD2E47BD6100A07B38 /* DigitRecognition.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DigitRecognition.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C42654E22E47E9B400A07B38 /* LinearAlgebraTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LinearAlgebraTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		C42654CF2E47BD6100A07B38 /* LinearAlgebraDemo */ = {
+		C42654CF2E47BD6100A07B38 /* DigitRecognition */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = LinearAlgebraDemo;
+			path = DigitRecognition;
 			sourceTree = "<group>";
 		};
 		C42654E32E47E9B400A07B38 /* LinearAlgebraTests */ = {
@@ -55,7 +55,7 @@
 		C42654C42E47BD6100A07B38 = {
 			isa = PBXGroup;
 			children = (
-				C42654CF2E47BD6100A07B38 /* LinearAlgebraDemo */,
+				C42654CF2E47BD6100A07B38 /* DigitRecognition */,
 				C42654E32E47E9B400A07B38 /* LinearAlgebraTests */,
 				C42654CE2E47BD6100A07B38 /* Products */,
 			);
@@ -64,7 +64,7 @@
 		C42654CE2E47BD6100A07B38 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C42654CD2E47BD6100A07B38 /* LinearAlgebraDemo.app */,
+				C42654CD2E47BD6100A07B38 /* DigitRecognition.app */,
 				C42654E22E47E9B400A07B38 /* LinearAlgebraTests.xctest */,
 			);
 			name = Products;
@@ -73,9 +73,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C42654CC2E47BD6100A07B38 /* LinearAlgebraDemo */ = {
+		C42654CC2E47BD6100A07B38 /* DigitRecognition */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C42654D92E47BD6200A07B38 /* Build configuration list for PBXNativeTarget "LinearAlgebraDemo" */;
+			buildConfigurationList = C42654D92E47BD6200A07B38 /* Build configuration list for PBXNativeTarget "DigitRecognition" */;
 			buildPhases = (
 				C42654C92E47BD6100A07B38 /* Sources */,
 				C42654CA2E47BD6100A07B38 /* Frameworks */,
@@ -86,13 +86,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				C42654CF2E47BD6100A07B38 /* LinearAlgebraDemo */,
+				C42654CF2E47BD6100A07B38 /* DigitRecognition */,
 			);
-			name = LinearAlgebraDemo;
+			name = DigitRecognition;
 			packageProductDependencies = (
 			);
 			productName = LinearAlgebraDemo;
-			productReference = C42654CD2E47BD6100A07B38 /* LinearAlgebraDemo.app */;
+			productReference = C42654CD2E47BD6100A07B38 /* DigitRecognition.app */;
 			productType = "com.apple.product-type.application";
 		};
 		C42654E12E47E9B400A07B38 /* LinearAlgebraTests */ = {
@@ -137,7 +137,7 @@
 					};
 				};
 			};
-			buildConfigurationList = C42654C82E47BD6100A07B38 /* Build configuration list for PBXProject "LinearAlgebraDemo" */;
+			buildConfigurationList = C42654C82E47BD6100A07B38 /* Build configuration list for PBXProject "DigitRecognition" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -151,7 +151,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C42654CC2E47BD6100A07B38 /* LinearAlgebraDemo */,
+				C42654CC2E47BD6100A07B38 /* DigitRecognition */,
 				C42654E12E47E9B400A07B38 /* LinearAlgebraTests */,
 			);
 		};
@@ -194,7 +194,7 @@
 /* Begin PBXTargetDependency section */
 		C42654E72E47E9B400A07B38 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = C42654CC2E47BD6100A07B38 /* LinearAlgebraDemo */;
+			target = C42654CC2E47BD6100A07B38 /* DigitRecognition */;
 			targetProxy = C42654E62E47E9B400A07B38 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -326,7 +326,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = LinearAlgebraDemo/LinearAlgebraDemo.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "DigitRecognition/Support files/DigitRecognition.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = DWG4C277UK;
@@ -334,7 +334,7 @@
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = "";
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Handwriting;
+				INFOPLIST_KEY_CFBundleDisplayName = "Digit Recognition";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -351,7 +351,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
 				OTHER_CFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.robertmryan.LinearAlgebraDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.robertmryan.DigitRecognition;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -368,7 +368,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = LinearAlgebraDemo/LinearAlgebraDemo.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "DigitRecognition/Support files/DigitRecognition.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = DWG4C277UK;
@@ -376,7 +376,7 @@
 				ENABLE_PREVIEWS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = "";
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Handwriting;
+				INFOPLIST_KEY_CFBundleDisplayName = "Digit Recognition";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -393,7 +393,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
 				OTHER_CFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.robertmryan.LinearAlgebraDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.robertmryan.DigitRecognition;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -411,12 +411,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = DWG4C277UK;
-				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = (
-					ACCELERATE_NEW_LAPACK,
-					ACCELERATE_LAPACK_ILP64,
-				);
-				"GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS[arch=*]" = "";
+				DEVELOPMENT_TEAM = HQ8TLN3UQR;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
@@ -428,7 +423,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LinearAlgebraDemo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LinearAlgebraDemo";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DigitRecognition.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DigitRecognition";
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
 			name = Debug;
@@ -439,12 +434,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = DWG4C277UK;
-				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = (
-					ACCELERATE_NEW_LAPACK,
-					ACCELERATE_LAPACK_ILP64,
-				);
-				"GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS[arch=*]" = "";
+				DEVELOPMENT_TEAM = HQ8TLN3UQR;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
@@ -456,7 +446,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LinearAlgebraDemo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LinearAlgebraDemo";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DigitRecognition.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DigitRecognition";
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
 			name = Release;
@@ -464,7 +454,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C42654C82E47BD6100A07B38 /* Build configuration list for PBXProject "LinearAlgebraDemo" */ = {
+		C42654C82E47BD6100A07B38 /* Build configuration list for PBXProject "DigitRecognition" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C42654D72E47BD6200A07B38 /* Debug */,
@@ -473,7 +463,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C42654D92E47BD6200A07B38 /* Build configuration list for PBXNativeTarget "LinearAlgebraDemo" */ = {
+		C42654D92E47BD6200A07B38 /* Build configuration list for PBXNativeTarget "DigitRecognition" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C42654DA2E47BD6200A07B38 /* Debug */,

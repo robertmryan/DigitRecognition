@@ -1,5 +1,5 @@
 //
-//  LinearAlgebraDemoApp.swift
+//  DigitRecognitionApp.swift
 //  LinearAlgebraDemo
 //
 //  Created by Robert Ryan on 8/9/25.
@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct LinearAlgebraDemoApp: App {
+struct DigitRecognitionApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

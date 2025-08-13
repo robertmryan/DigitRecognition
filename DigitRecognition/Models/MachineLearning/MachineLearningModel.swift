@@ -6,6 +6,8 @@
 //
 
 protocol MachineLearningModel {
+    init(inputVectorSize: Int, outputVectorSize: Int)
+
     /// Train model for one input.
     ///
     /// - Parameters:
