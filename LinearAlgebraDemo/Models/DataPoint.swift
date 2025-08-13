@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// A data point to be shown on Chart.
+
 struct DataPoint: Hashable {
     let name: String
     let value: Float

@@ -17,10 +17,9 @@ class ViewModel: ObservableObject {
     @Published var imagesAndLabelsIndex = 0 { didSet { testModel() } }
     @Published var dataType = "Not Started"
 
-    var model: Matrix<Float>?
-    var biasVector: Vector<Float>?
+    private var model: (any MachineLearningModel)?
 
-    private let outputs: [Vector<Float>] = [
+    private let trainingOutputs: [Vector<Float>] = [
         Vector([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
         Vector([0, 1, 0, 0, 0, 0, 0, 0, 0, 0]),
         Vector([0, 0, 1, 0, 0, 0, 0, 0, 0, 0]),
@@ -34,7 +33,7 @@ class ViewModel: ObservableObject {
     ]
 
     init() {
-        imageAndLabel = ImageAndLabel(imageBytes: Array(repeating: 0, count: 28 * 28), digit: nil)
+        imageAndLabel = ImageAndLabel(imageBytes: Array(repeating: 0, count: 28 * 28), digit: nil) // an empty image
     }
 
     func loadTests() async {
@@ -103,11 +102,11 @@ class ViewModel: ObservableObject {
         let imageBytes = imageAndLabel.imageBytes
 
         let x = Vector(imageBytes.map { Float($0) / 255 })
-        guard let model, let biasVector else {
+        guard let model else {
             return
         }
 
-        let y = LinearAlgebra.test(x: x, w: model, b: biasVector)
+        let y = model.inference(of: x)
         self.result = (0..<10).map { DataPoint(name: "\($0)", value: y[$0]) }
     }
 
@@ -117,7 +116,7 @@ class ViewModel: ObservableObject {
             progress = 0
             defer { progress = nil }
 
-            let task = Task.detached(priority: .utility) { [self, outputs] in
+            let task = Task.detached(priority: .utility) { [self, trainingOutputs] in
                 guard
                     let imagesUrl = Bundle.main.url(forResource: "train-images", withExtension: "idx3-ubyte"),
                     let labelsUrl = Bundle.main.url(forResource: "train-labels", withExtension: "idx1-ubyte")
@@ -130,10 +129,8 @@ class ViewModel: ObservableObject {
                 let count = sequence.imagesHeader.count
                 let modelColumns = sequence.imagesHeader.countPerItem // 784 for the 28 × 28 image
                 let modelRows = 10                                    // 10
-                let learningRate: Float = 0.01
 
-                let model = Matrix<Float>(repeating: 0.01, rows: modelRows, cols: modelColumns)
-                let biasVector = Vector<Float>(repeating: 0, count: modelRows)
+                let model = SGDSingleLayer.init(inputCount: modelRows, outputCount: modelColumns)
 
                 var index = 0
 
@@ -148,14 +145,8 @@ class ViewModel: ObservableObject {
                     imagesAndLabels.append(ImageAndLabel(imageBytes: record.imageBytes, digit: record.labelBytes.first!))
 
                     let x = Vector(imageBytes)
-                    let t = outputs[digit]
-                    LinearAlgebra.trainStep(
-                        x: x,
-                        t: t,
-                        w: model,
-                        b: biasVector,
-                        learningRate: learningRate
-                    )
+                    let t = trainingOutputs[digit]
+                    model.train(x: x, t: t)
 
                     let progress = Float(index) / Float(count)
 
@@ -172,7 +163,7 @@ class ViewModel: ObservableObject {
                     // }
                 }
 
-                await update(model: model, biasVector: biasVector, imagesAndLabels: imagesAndLabels)
+                await update(model: model, imagesAndLabels: imagesAndLabels)
             }
 
             try await withTaskCancellationHandler {
@@ -185,9 +176,8 @@ class ViewModel: ObservableObject {
         }
     }
 
-    func update(model: Matrix<Float>, biasVector: Vector<Float>, imagesAndLabels: [ImageAndLabel]) {
+    func update(model: any MachineLearningModel, imagesAndLabels: [ImageAndLabel]) {
         self.model = model
-        self.biasVector = biasVector
         self.imagesAndLabels = imagesAndLabels
         self.imagesAndLabelsIndex = 0
     }

@@ -8,7 +8,7 @@
 import SwiftUI
 import os.log
 
-let poi = OSSignposter(subsystem: "ML", category: .pointsOfInterest)
+let poi = OSSignposter(subsystem: "SGDSingleLayer", category: .pointsOfInterest)
 
 struct ContentView: View {
     @StateObject var viewModel = ViewModel()

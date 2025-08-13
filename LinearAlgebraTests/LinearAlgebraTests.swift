@@ -12,59 +12,60 @@ struct LinearAlgebraTestsFloat {
     typealias Scalar = Float
 
     @Test func matrixTimesVector() {
-        let matrix = Matrix<Scalar>([
+        let matrix: Matrix<Scalar> = [
             [1, 4],
             [2, 5],
             [3, 6]
-        ])
-        let vector: Vector<Scalar> = Vector([1, 2])
+        ]
+        let vector: Vector<Scalar> = [1, 2]
 
-        let result = LinearAlgebra.matrixTimesVector(matrix: matrix, vector: vector)
-        let expectedResult = Vector<Scalar>([9, 12, 15])
+        let result = matrix * vector
+        let expectedResult: Vector<Scalar> = [9, 12, 15]
 
         #expect(result == expectedResult)
     }
 
     @Test func vectorTimesMatrix() {
-        let vector: Vector<Scalar> = Vector([1, 2, 3])
-        let matrix = Matrix<Scalar>([
+        let vector: Vector<Scalar> = [1, 2, 3]
+        let matrix: Matrix<Scalar> = [
             [1, 4],
             [2, 5],
             [3, 6]
-        ])
-        let result = LinearAlgebra.vectorTimesMatrix(vector: vector, matrix: matrix)
-        let expectedResult = Vector<Scalar>([14, 32])
+        ]
+        let result = vector * matrix
+        let expectedResult: Vector<Scalar> = [14, 32]
 
         #expect(result == expectedResult)
     }
 
     @Test func matrixTimesMatrix() {
-        let lhs: Matrix<Scalar> = Matrix([
+        let lhs: Matrix<Scalar> = [
             [1, 2, 3],
             [4, 5, 6],
-        ])
-        let rhs = Matrix<Scalar>([
+        ]
+        let rhs: Matrix<Scalar> = [
             [1, 4],
             [2, 5],
             [3, 6]
-        ])
-        let result = LinearAlgebra.matrixTimesMatrix(lhs: lhs, rhs: rhs)
-        let expectedResult = Matrix<Scalar>([
+        ]
+        let result = lhs * rhs
+        let expectedResult: Matrix<Scalar> = [
             [14, 32],
             [32, 77]
-        ])
+        ]
 
         #expect(result == expectedResult)
     }
 
-    @Test func innerProduct() {
-        let a: Vector<Scalar> = Vector(
-            [1, 2, 3],
-        )
+    @Test func vectorMax() {
+        let vector: Vector<Scalar> = [1, 7, 3]
+        let expectedResult: Scalar = 7
+        #expect(vector.max() == expectedResult)
+    }
 
-        let b: Vector<Scalar> = Vector(
-            [5, 6, 7],
-        )
+    @Test func innerProduct() {
+        let a: Vector<Scalar> = [1, 2, 3]
+        let b: Vector<Scalar> = [5, 6, 7]
 
         let result = a.innerProduct(with: b)
 
@@ -72,9 +73,7 @@ struct LinearAlgebraTestsFloat {
     }
 
     @Test func unitVector() {
-        let vector: Vector<Scalar> = Vector(
-            [1, 2, 3, 4, 5, 6],
-        )
+        let vector: Vector<Scalar> = [1, 2, 3, 4, 5, 6]
         let normalized = vector.unitVector()
 
         let result = normalized.innerProduct(with: normalized)
@@ -85,7 +84,7 @@ struct LinearAlgebraTestsFloat {
 
     @Test
     func softmaxBasicProperties() {
-        let logits = Vector<Scalar>([2.0, 1.0, 0.1])
+        let logits: Vector<Scalar> = [2.0, 1.0, 0.1]
         let probs = logits.softmax()
 
         // Sum should be approximately 1.0
@@ -100,14 +99,65 @@ struct LinearAlgebraTestsFloat {
 
     @Test
     func softmaxKnownOutput() {
-        let logits = Vector<Scalar>([2.0, 1.0, 0.1])
-        let expected = Vector<Scalar>([0.65900114, 0.24243297, 0.09856589])
+        let logits: Vector<Scalar> = [2.0, 1.0, 0.1]
+        let expected: Vector<Scalar> = [0.65900114, 0.24243297, 0.09856589]
 
         let output = logits.softmax()
 
         for (o, e) in zip(output, expected) {
             #expect(abs(o - e) < 1e-3, "Softmax output \(o) differs from expected \(e)")
         }
+    }
+
+    @Test
+    func vectorAddition() {
+        let vector1: Vector<Scalar> = [7, 23]
+        let vector2: Vector<Scalar> = [1, 2]
+        let expectedResult: Vector<Scalar> = [8, 25]
+        let result = vector1 + vector2
+        #expect(result == expectedResult)
+    }
+
+    @Test
+    func vectorSubtraction() {
+        let vector1: Vector<Scalar> = [7, 23]
+        let vector2: Vector<Scalar> = [1, 2]
+        let expectedResult: Vector<Scalar> = [6, 21]
+        let result = vector1 - vector2
+        #expect(result == expectedResult)
+    }
+
+    @Test
+    func vectorScaled() {
+        let vector: Vector<Scalar> = [7, 23]
+        let b: Scalar = 2
+        let expectedResult: Vector<Scalar> = [14, 46]
+        let result = vector * b
+        #expect(result == expectedResult)
+    }
+
+    @Test
+    func matrixMultipliedByVectorAndVectorAdded() {
+        let matrix: Matrix<Scalar> = [
+            [1, 2],
+            [3, 4]
+        ]
+        let vector1: Vector<Scalar> = [2, 7]
+        let vector2: Vector<Scalar> = [4, 2]
+        let expectedResult = matrix * vector1 + vector2
+        let result = matrix.multipliedBy(vector1, plus: vector2)
+        #expect(result == expectedResult)
+    }
+
+    @Test
+    func vectorScaledPlusVector() {
+        let a: Vector<Scalar> = [1, 2]
+        let b: Scalar = 2
+        let c: Vector<Scalar> = [3, 4]
+
+        let expectedResult: Vector<Scalar> = [5, 8]
+        let result = a.multiplied(by: b, plus: c)
+        #expect(result == expectedResult)
     }
 }
 
@@ -115,59 +165,60 @@ struct LinearAlgebraTestsDouble {
     typealias Scalar = Double
 
     @Test func matrixTimesVector() {
-        let matrix = Matrix<Scalar>([
+        let matrix: Matrix<Scalar> = [
             [1, 4],
             [2, 5],
             [3, 6]
-        ])
-        let vector: Vector<Scalar> = Vector([1, 2])
+        ]
+        let vector: Vector<Scalar> = [1, 2]
 
-        let result = LinearAlgebra.matrixTimesVector(matrix: matrix, vector: vector)
-        let expectedResult = Vector<Scalar>([9, 12, 15])
+        let result = matrix * vector
+        let expectedResult: Vector<Scalar> = [9, 12, 15]
 
         #expect(result == expectedResult)
     }
 
     @Test func vectorTimesMatrix() {
-        let vector: Vector<Scalar> = Vector([1, 2, 3])
-        let matrix = Matrix<Scalar>([
+        let vector: Vector<Scalar> = [1, 2, 3]
+        let matrix: Matrix<Scalar> = [
             [1, 4],
             [2, 5],
             [3, 6]
-        ])
-        let result = LinearAlgebra.vectorTimesMatrix(vector: vector, matrix: matrix)
-        let expectedResult = Vector<Scalar>([14, 32])
+        ]
+        let result = vector * matrix
+        let expectedResult: Vector<Scalar> = [14, 32]
 
         #expect(result == expectedResult)
     }
 
     @Test func matrixTimesMatrix() {
-        let lhs: Matrix<Scalar> = Matrix([
+        let lhs: Matrix<Scalar> = [
             [1, 2, 3],
             [4, 5, 6],
-        ])
-        let rhs = Matrix<Scalar>([
+        ]
+        let rhs: Matrix<Scalar> = [
             [1, 4],
             [2, 5],
             [3, 6]
-        ])
-        let result = LinearAlgebra.matrixTimesMatrix(lhs: lhs, rhs: rhs)
-        let expectedResult = Matrix<Scalar>([
+        ]
+        let result = lhs * rhs
+        let expectedResult: Matrix<Scalar> = [
             [14, 32],
             [32, 77]
-        ])
+        ]
 
         #expect(result == expectedResult)
     }
 
-    @Test func innerProduct() {
-        let a: Vector<Scalar> = Vector(
-            [1, 2, 3],
-        )
+    @Test func vectorMax() {
+        let vector: Vector<Scalar> = [1, 7, 3]
+        let expectedResult: Scalar = 7
+        #expect(vector.max() == expectedResult)
+    }
 
-        let b: Vector<Scalar> = Vector(
-            [5, 6, 7],
-        )
+    @Test func innerProduct() {
+        let a: Vector<Scalar> = [1, 2, 3]
+        let b: Vector<Scalar> = [5, 6, 7]
 
         let result = a.innerProduct(with: b)
 
@@ -175,9 +226,7 @@ struct LinearAlgebraTestsDouble {
     }
 
     @Test func unitVector() {
-        let vector: Vector<Scalar> = Vector(
-            [1, 2, 3, 4, 5, 6],
-        )
+        let vector: Vector<Scalar> = [1, 2, 3, 4, 5, 6]
         let normalized = vector.unitVector()
 
         let result = normalized.innerProduct(with: normalized)
@@ -188,7 +237,7 @@ struct LinearAlgebraTestsDouble {
 
     @Test
     func softmaxBasicProperties() {
-        let logits = Vector<Scalar>([2.0, 1.0, 0.1])
+        let logits:  Vector<Scalar> = [2.0, 1.0, 0.1]
         let probs = logits.softmax()
 
         // Sum should be approximately 1.0
@@ -203,13 +252,64 @@ struct LinearAlgebraTestsDouble {
 
     @Test
     func softmaxKnownOutput() {
-        let logits = Vector<Scalar>([2.0, 1.0, 0.1])
-        let expected = Vector<Scalar>([0.65900114, 0.24243297, 0.09856589])
+        let logits: Vector<Scalar> = [2.0, 1.0, 0.1]
+        let expected: Vector<Scalar> = [0.65900114, 0.24243297, 0.09856589]
 
         let output = logits.softmax()
 
         for (o, e) in zip(output, expected) {
             #expect(abs(o - e) < 1e-3, "Softmax output \(o) differs from expected \(e)")
         }
+    }
+
+    @Test
+    func vectorAddition() {
+        let vector1: Vector<Scalar> = [7, 23]
+        let vector2: Vector<Scalar> = [1, 2]
+        let expectedResult: Vector<Scalar> = [8, 25]
+        let result = vector1 + vector2
+        #expect(result == expectedResult)
+    }
+
+    @Test
+    func vectorSubtraction() {
+        let vector1: Vector<Scalar> = [7, 23]
+        let vector2: Vector<Scalar> = [1, 2]
+        let expectedResult: Vector<Scalar> = [6, 21]
+        let result = vector1 - vector2
+        #expect(result == expectedResult)
+    }
+
+    @Test
+    func vectorScaled() {
+        let vector: Vector<Scalar> = [7, 23]
+        let b: Scalar = 2
+        let expectedResult: Vector<Scalar> = [14, 46]
+        let result = vector * b
+        #expect(result == expectedResult)
+    }
+
+    @Test
+    func matrixMultipliedByVectorAndVectorAdded() {
+        let matrix: Matrix<Scalar> = [
+            [1, 2],
+            [3, 4]
+        ]
+        let vector1: Vector<Scalar> = [2, 7]
+        let vector2: Vector<Scalar> = [4, 2]
+        let expectedResult = matrix * vector1 + vector2
+        let result = matrix.multipliedBy(vector1, plus: vector2)
+        #expect(result == expectedResult)
+    }
+
+    @Test
+    func vectorScaledPlusVector() {
+        let a: Vector<Scalar> = [1, 2]
+        let b: Scalar = 2
+        let c: Vector<Scalar> = [3, 4]
+
+        let expectedResult: Vector<Scalar> = [5, 8]
+        let result = a.multiplied(by: b, plus: c)
+        #expect(result == expectedResult)
     }
 }

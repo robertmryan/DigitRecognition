@@ -63,21 +63,33 @@ struct DrawingView: View {
                         Button("Undo") {
                             _ = strokes.popLast()
                         }
+                        .padding(.horizontal, 24) // horizontal padding controls width
+                        .padding(.vertical, 12)   // vertical padding controls height
+                        .buttonStyle(.plain)
                         .background(Color(.sRGB, white: 0.25, opacity: 0.8))
+                        .clipShape(Capsule())
                         .disabled(strokes.isEmpty)
 
                         Button("Clear") {
                             strokes.removeAll()
                             currentPoints.removeAll()
                         }
+                        .padding(.horizontal, 24) // horizontal padding controls width
+                        .padding(.vertical, 12)   // vertical padding controls height
+                        .buttonStyle(.plain)
                         .background(Color(.sRGB, white: 0.25, opacity: 0.8))
+                        .clipShape(Capsule())
 
                         Button("Process") {
                             rasterizeStrokesToMNISTPixels(strokes: strokes, lineWidth: lineWidth, originalSize: geometry.size)
                             strokes.removeAll()
                             currentPoints.removeAll()
                         }
+                        .padding(.horizontal, 24) // horizontal padding controls width
+                        .padding(.vertical, 12)   // vertical padding controls height
+                        .buttonStyle(.plain)
                         .background(Color(.sRGB, white: 0.25, opacity: 0.8))
+                        .clipShape(Capsule())
 
                         Spacer()
                     }

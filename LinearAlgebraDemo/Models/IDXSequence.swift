@@ -7,7 +7,9 @@
 
 import Foundation
 
-class IDXSequence: AsyncSequence, AsyncIteratorProtocol {
+/// An `AsyncSequence` used for iterating through a IDX file.
+
+class IDXSequence {
     var imagesBytes: URL.AsyncBytes.AsyncIterator
     var labelsBytes: URL.AsyncBytes.AsyncIterator
     var imagesHeader: IDXHeader!
@@ -19,7 +21,50 @@ class IDXSequence: AsyncSequence, AsyncIteratorProtocol {
         imagesHeader = try await readHeader(for: &imagesBytes)
         labelsHeader = try await readHeader(for: &labelsBytes)
     }
+}
 
+extension IDXSequence: AsyncSequence, AsyncIteratorProtocol {
+    func makeAsyncIterator() -> AsyncIterator {
+        AsyncIterator(
+            imagesBytes: imagesBytes,
+            labelsBytes: labelsBytes,
+            imagesHeader: imagesHeader,
+            labelsHeader: labelsHeader
+        )
+    }
+
+    struct AsyncIterator: AsyncIteratorProtocol {
+        var imagesBytes: URL.AsyncBytes.AsyncIterator
+        var labelsBytes: URL.AsyncBytes.AsyncIterator
+        var imagesHeader: IDXHeader
+        var labelsHeader: IDXHeader
+        var current = 0
+
+        mutating func next() async throws -> IDXRecord? {
+            guard
+                let imageBytes = try await readBytes(imagesHeader.countPerItem, from: &imagesBytes),
+                let labelBytes = try await readBytes(labelsHeader.countPerItem, from: &labelsBytes)
+            else {
+                return nil
+            }
+
+            return IDXRecord(imageBytes: imageBytes, labelBytes: labelBytes)
+        }
+
+        private func readBytes(_ count: Int, from bytes: inout URL.AsyncBytes.AsyncIterator) async throws -> [UInt8]? {
+            var result: [UInt8] = []
+            for _ in 0..<count {
+                guard let byte = try await bytes.next() else {
+                    return nil
+                }
+                result.append(byte)
+            }
+            return result
+        }
+    }
+}
+
+private extension IDXSequence {
     func readHeader(for bytes: inout URL.AsyncBytes.AsyncIterator) async throws -> IDXHeader {
         _ = try await bytes.next()
         _ = try await bytes.next()
@@ -52,45 +97,6 @@ class IDXSequence: AsyncSequence, AsyncIteratorProtocol {
             dimensions: dimension,
             type: type,
             counts: [Int(dimension)] + counts
-        )
-    }
-
-    struct AsyncIterator: AsyncIteratorProtocol {
-        var imagesBytes: URL.AsyncBytes.AsyncIterator
-        var labelsBytes: URL.AsyncBytes.AsyncIterator
-        var imagesHeader: IDXHeader
-        var labelsHeader: IDXHeader
-        var current = 0
-
-        mutating func next() async throws -> IDXRecord? {
-            guard
-                let imageBytes = try await readBytes(imagesHeader.countPerItem, from: &imagesBytes),
-                let labelBytes = try await readBytes(labelsHeader.countPerItem, from: &labelsBytes)
-            else {
-                return nil
-            }
-
-            return IDXRecord(imageBytes: imageBytes, labelBytes: labelBytes)
-        }
-
-        func readBytes(_ count: Int, from bytes: inout URL.AsyncBytes.AsyncIterator) async throws -> [UInt8]? {
-            var result: [UInt8] = []
-            for _ in 0..<count {
-                guard let byte = try await bytes.next() else {
-                    return nil
-                }
-                result.append(byte)
-            }
-            return result
-        }
-    }
-
-    func makeAsyncIterator() -> AsyncIterator {
-        AsyncIterator(
-            imagesBytes: imagesBytes,
-            labelsBytes: labelsBytes,
-            imagesHeader: imagesHeader,
-            labelsHeader: labelsHeader
         )
     }
 
