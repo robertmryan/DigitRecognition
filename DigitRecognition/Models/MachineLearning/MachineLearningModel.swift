@@ -5,7 +5,8 @@
 //  Created by Robert Ryan on 8/13/25.
 //
 
-protocol MachineLearningModel {
+@MachineLearningModelActor
+protocol MachineLearningModel: Sendable {
     init(inputVectorSize: Int, outputVectorSize: Int)
 
     /// Train model for one input.
@@ -23,4 +24,10 @@ protocol MachineLearningModel {
     /// - Returns: An output vector.
 
     func inference(of x: Vector<Float>) -> Vector<Float>
+}
+
+@globalActor
+actor MachineLearningModelActor {
+    static let shared = MachineLearningModelActor()
+    private init() { }
 }

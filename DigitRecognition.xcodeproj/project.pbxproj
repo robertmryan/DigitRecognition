@@ -19,6 +19,8 @@
 /* Begin PBXFileReference section */
 		C42654CD2E47BD6100A07B38 /* DigitRecognition.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DigitRecognition.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C42654E22E47E9B400A07B38 /* LinearAlgebraTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LinearAlgebraTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4CCDF9C2E4D5B8B00A92185 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
+		C4CCDF9D2E4D5B8B00A92185 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -58,6 +60,8 @@
 				C42654CF2E47BD6100A07B38 /* DigitRecognition */,
 				C42654E32E47E9B400A07B38 /* LinearAlgebraTests */,
 				C42654CE2E47BD6100A07B38 /* Products */,
+				C4CCDF9C2E4D5B8B00A92185 /* LICENSE.md */,
+				C4CCDF9D2E4D5B8B00A92185 /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -357,7 +361,7 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
@@ -399,7 +403,7 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};

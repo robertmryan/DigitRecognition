@@ -9,7 +9,7 @@ import Foundation
 
 /// An `AsyncSequence` used for iterating through a IDX file.
 
-class IDXSequence {
+struct IDXSequence {
     var imagesBytes: URL.AsyncBytes.AsyncIterator
     var labelsBytes: URL.AsyncBytes.AsyncIterator
     var imagesHeader: IDXHeader!

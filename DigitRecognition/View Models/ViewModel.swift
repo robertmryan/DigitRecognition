@@ -14,23 +14,10 @@ class ViewModel: ObservableObject {
     @Published var result: [DataPoint] = []
     @Published var error: (any Error)?
     @Published var imagesAndLabels: [ImageAndLabel]?
-    @Published var imagesAndLabelsIndex = 0 { didSet { testModel() } }
+    @Published var imagesAndLabelsIndex = 0 { didSet { Task { await testModel() } } }
     @Published var dataType = "Not Started"
 
     private var model: (any MachineLearningModel)?
-
-    private let trainingOutputs: [Vector<Float>] = [
-        Vector([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
-        Vector([0, 1, 0, 0, 0, 0, 0, 0, 0, 0]),
-        Vector([0, 0, 1, 0, 0, 0, 0, 0, 0, 0]),
-        Vector([0, 0, 0, 1, 0, 0, 0, 0, 0, 0]),
-        Vector([0, 0, 0, 0, 1, 0, 0, 0, 0, 0]),
-        Vector([0, 0, 0, 0, 0, 1, 0, 0, 0, 0]),
-        Vector([0, 0, 0, 0, 0, 0, 1, 0, 0, 0]),
-        Vector([0, 0, 0, 0, 0, 0, 0, 1, 0, 0]),
-        Vector([0, 0, 0, 0, 0, 0, 0, 0, 1, 0]),
-        Vector([0, 0, 0, 0, 0, 0, 0, 0, 0, 1]),
-    ]
 
     init() {
         imageAndLabel = ImageAndLabel(imageBytes: Array(repeating: 0, count: 28 * 28), digit: nil) // an empty image
@@ -48,12 +35,13 @@ class ViewModel: ObservableObject {
                 return
             }
 
-            let sequence = try await IDXSequence(images: imagesUrl, labels: labelsUrl)
             var imagesAndLabels: [ImageAndLabel] = []
             progress = 0
             defer { progress = nil }
 
             let task = Task.detached {
+                let sequence = try await IDXSequence(images: imagesUrl, labels: labelsUrl)
+
                 let count = sequence.imagesHeader.count
                 var index = 0
 
@@ -86,7 +74,7 @@ class ViewModel: ObservableObject {
         }
     }
 
-    func testModel() {
+    func testModel() async {
         guard
             let imagesAndLabels,
             imagesAndLabelsIndex < imagesAndLabels.count
@@ -94,10 +82,10 @@ class ViewModel: ObservableObject {
             return
         }
 
-        testModel(for: imagesAndLabels[imagesAndLabelsIndex])
+        await testModel(for: imagesAndLabels[imagesAndLabelsIndex])
     }
 
-    func testModel(for imageAndLabel: ImageAndLabel) {
+    func testModel(for imageAndLabel: ImageAndLabel) async {
         self.imageAndLabel = imageAndLabel
         let imageBytes = imageAndLabel.imageBytes
 
@@ -106,17 +94,33 @@ class ViewModel: ObservableObject {
             return
         }
 
-        let y = model.inference(of: x)
-        self.result = (0..<10).map { DataPoint(name: "\($0)", value: y[$0]) }
+        let task = Task { @MachineLearningModelActor in
+            let y = model.inference(of: x)
+            return (0..<10).map { DataPoint(name: "\($0)", value: y[$0]) }
+        }
+        self.result = await task.value
     }
 
     func train() async {
-        dataType = "Training Data"
         do {
+            dataType = "Training Data"
             progress = 0
             defer { progress = nil }
 
-            let task = Task.detached(priority: .utility) { [self, trainingOutputs] in
+            let task = Task(priority: .utility) { @MachineLearningModelActor [self] in
+                let trainingOutputs: [Vector<Float>] = [
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                ]
+
                 guard
                     let imagesUrl = Bundle.main.url(forResource: "train-images", withExtension: "idx3-ubyte"),
                     let labelsUrl = Bundle.main.url(forResource: "train-labels", withExtension: "idx1-ubyte")
@@ -176,7 +180,7 @@ class ViewModel: ObservableObject {
         }
     }
 
-    func update(model: any MachineLearningModel, imagesAndLabels: [ImageAndLabel]) {
+    func update(model: sending any MachineLearningModel, imagesAndLabels: sending [ImageAndLabel]) {
         self.model = model
         self.imagesAndLabels = imagesAndLabels
         self.imagesAndLabelsIndex = 0

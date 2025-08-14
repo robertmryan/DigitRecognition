@@ -91,7 +91,7 @@ struct ContentView: View {
             focusedField = .main
         }
         .task(id: updatedImageAndLabel) {
-            viewModel.testModel(for: updatedImageAndLabel)
+            await viewModel.testModel(for: updatedImageAndLabel)
         }
     }
 

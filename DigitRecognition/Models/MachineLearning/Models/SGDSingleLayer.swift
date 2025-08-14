@@ -9,12 +9,11 @@ import Foundation
 
 /// Stochastic Gradient Descent.
 
-struct SGDSingleLayer: MachineLearningModel {
-    /// The single layer matrix underpinning this model
-    private var w: Matrix<Float>
+final class SGDSingleLayer: MachineLearningModel {    /// The single layer matrix underpinning this model
+    private let w: Matrix<Float>
 
     /// The model’s current bias vector
-    private var b: Vector<Float>
+    private let b: Vector<Float>
 
     /// The model’s learning rate
     let learningRate: Float = 0.01
