@@ -14,7 +14,7 @@ class ViewModel: ObservableObject {
     @Published var result: [DataPoint] = []
     @Published var error: (any Error)?
     @Published var imagesAndLabels: [ImageAndLabel]?
-    @Published var imagesAndLabelsIndex = 0 { didSet { Task { await testModel() } } }
+    @Published var imagesAndLabelsIndex = 0 { didSet { Task { await testModel(priority: .userInitiated) } } }
     @Published var dataType = "Not Started"
 
     private var model: (any MachineLearningModel)?
@@ -74,7 +74,7 @@ class ViewModel: ObservableObject {
         }
     }
 
-    func testModel() async {
+    func testModel(priority: TaskPriority? = nil) async {
         guard
             let imagesAndLabels,
             imagesAndLabelsIndex < imagesAndLabels.count
@@ -82,10 +82,10 @@ class ViewModel: ObservableObject {
             return
         }
 
-        await testModel(for: imagesAndLabels[imagesAndLabelsIndex])
+        await testModel(for: imagesAndLabels[imagesAndLabelsIndex], priority: priority)
     }
 
-    func testModel(for imageAndLabel: ImageAndLabel) async {
+    func testModel(for imageAndLabel: ImageAndLabel, priority: TaskPriority? = nil) async {
         self.imageAndLabel = imageAndLabel
         let imageBytes = imageAndLabel.imageBytes
 
@@ -94,7 +94,7 @@ class ViewModel: ObservableObject {
             return
         }
 
-        let task = Task { @MachineLearningModelActor in
+        let task = Task(priority: priority) { @MachineLearningModelActor in
             let y = model.inference(of: x)
             return (0..<10).map { DataPoint(name: "\($0)", value: y[$0]) }
         }
@@ -107,7 +107,7 @@ class ViewModel: ObservableObject {
             progress = 0
             defer { progress = nil }
 
-            let task = Task(priority: .utility) { @MachineLearningModelActor [self] in
+            let task = Task(priority: .userInitiated) { @MachineLearningModelActor [self] in
                 let trainingOutputs: [Vector<Float>] = [
                     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],

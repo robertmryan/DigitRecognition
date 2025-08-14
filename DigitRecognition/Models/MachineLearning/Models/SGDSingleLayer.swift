@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Stochastic Gradient Descent.
+/// Single layer model with Stochastic Gradient Descent.
 
 final class SGDSingleLayer: MachineLearningModel {    /// The single layer matrix underpinning this model
     private let w: Matrix<Float>
