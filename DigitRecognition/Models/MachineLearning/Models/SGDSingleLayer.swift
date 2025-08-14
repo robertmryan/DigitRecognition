@@ -34,7 +34,7 @@ extension SGDSingleLayer {
 
         // 1. Compute logits z = W * x + b
         // z shape: (10,)
-        let z = w.multipliedBy(x, plus: b)
+        let z = w.multiplied(by: x, plus: b)
 
         // 2. Compute softmax probabilities y
         let y = z.softmax()
@@ -61,6 +61,6 @@ extension SGDSingleLayer {
     }
 
     func inference(of x: Vector<Float>) -> Vector<Float> {
-        w.multipliedBy(x, plus: b).softmax()
+        w.multiplied(by: x, plus: b).softmax()
     }
 }

@@ -234,7 +234,7 @@ extension Vector where Element == Float {
     }
 
     @inlinable
-    func innerProduct(with b: Vector<Float>) -> Float {
+    func innerProduct(with b: Vector<Element>) -> Element {
         precondition(count == b.count)
 
         var result: Float = 0
@@ -250,14 +250,14 @@ extension Vector where Element == Float {
     }
 
     @inlinable
-    func outerProduct(with b: Vector<Float>) -> Float {
+    func outerProduct(with b: Vector<Element>) -> Matrix<Element> {
         precondition(count == b.count)
 
-        var result: Float = 0
+        let result = Matrix<Element>(repeating: 0, rows: count, cols: b.count)
         vDSP_mmul(
             buffer.baseAddress!, 1,        // A is m × p (i.e., m × 1)
             b.buffer.baseAddress!, 1,      // B is p × n (i.e., 1 × n)
-            &result, 1,                    // C is m × n (i.e., m × n)
+            result.buffer.baseAddress!, 1, // C is m × n (i.e., m × n)
             vDSP_Length(count),            // m
             vDSP_Length(b.count),          // n
             vDSP_Length(1)                 // p
@@ -266,22 +266,22 @@ extension Vector where Element == Float {
     }
 
     @inlinable
-    func max() -> Float {
+    func max() -> Element {
         var result: Float = 0
         vDSP_maxv(buffer.baseAddress!, 1, &result, vDSP_Length(count))
         return result
     }
 
     @inlinable
-    func sum() -> Float {
+    func sum() -> Element {
         var result: Float = 0
         vDSP_sve(buffer.baseAddress!, 1, &result, vDSP_Length(count))
         return result
     }
 
     @inlinable
-    func softmax() -> Vector<Float> {
-        let output = Vector<Float>(repeating: 0, count: count)
+    func softmax() -> Vector<Element> {
+        let output = Vector<Element>(repeating: 0, count: count)
 
         // Step 1: Find max for numerical stability
         var negMaxVal = -max()
@@ -364,7 +364,7 @@ extension Vector where Element == Double {
     }
 
     @inlinable
-    func innerProduct(with b: Vector<Double>) -> Double {
+    func innerProduct(with b: Vector<Element>) -> Element {
         precondition(count == b.count)
 
         var result: Double = 0
@@ -375,6 +375,22 @@ extension Vector where Element == Double {
             vDSP_Length(1),                // m
             vDSP_Length(1),                // n
             vDSP_Length(count)             // p
+        )
+        return result
+    }
+
+    @inlinable
+    func outerProduct(with b: Vector<Element>) -> Matrix<Element> {
+        precondition(count == b.count)
+
+        let result = Matrix<Element>(repeating: 0, rows: count, cols: b.count)
+        vDSP_mmulD(
+            buffer.baseAddress!, 1,        // A is m × p (i.e., m × 1)
+            b.buffer.baseAddress!, 1,      // B is p × n (i.e., 1 × n)
+            result.buffer.baseAddress!, 1, // C is m × n (i.e., m × n)
+            vDSP_Length(count),            // m
+            vDSP_Length(b.count),          // n
+            vDSP_Length(1)                 // p
         )
         return result
     }
@@ -438,6 +454,22 @@ extension Vector where Element == Double {
         )
 
         return d
+    }
+
+    @inlinable
+    func multiplied(by scalar: Element, plus pointer: UnsafeMutablePointer<Element>) {
+        var scalar = scalar
+
+        vDSP_vsmaD(
+            buffer.baseAddress!,         // A:  The input vector A in D = (A * B) + C.
+            1,                           // IA: The distance between the elements in the input vector A.
+            &scalar,                     // B:  The input scalar value B in D = (A * B) + C.
+            pointer,                     // C:  The input vector C in D = (A * B) + C.
+            1,                           // IC: The distance between the elements in the input vector C.
+            pointer,                     // D:  The output vector D in D = (A * B) + C. Overwrites C.
+            1,                           // ID: The distance between the elements in the output vector D.
+            vDSP_Length(count)           // N:  The number of elements that the function processes.
+        )
     }
 }
 

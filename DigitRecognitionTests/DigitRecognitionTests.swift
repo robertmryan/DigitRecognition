@@ -1,14 +1,14 @@
 //
-//  LinearAlgebraTests.swift
-//  LinearAlgebraTests
+//  DigitRecognitionTests.swift
+//  DigitRecognitionTests
 //
-//  Created by Robert Ryan on 8/9/25.
+//  Created by Robert Ryan on 8/14/25.
 //
 
 import Testing
-@testable import LinearAlgebraDemo
+@testable import DigitRecognition
 
-struct LinearAlgebraTestsFloat {
+struct DigitRecognitionTestsFloat {
     typealias Scalar = Float
 
     @Test func matrixTimesVector() {
@@ -145,7 +145,7 @@ struct LinearAlgebraTestsFloat {
         let vector1: Vector<Scalar> = [2, 7]
         let vector2: Vector<Scalar> = [4, 2]
         let expectedResult = matrix * vector1 + vector2
-        let result = matrix.multipliedBy(vector1, plus: vector2)
+        let result = matrix.multiplied(by: vector1, plus: vector2)
         #expect(result == expectedResult)
     }
 
@@ -159,9 +159,178 @@ struct LinearAlgebraTestsFloat {
         let result = a.multiplied(by: b, plus: c)
         #expect(result == expectedResult)
     }
+
+    @Test
+    func counting() {
+        let vector: Vector<Scalar> = [1, 2]
+        let matrix: Matrix<Scalar> = [
+            [1, 2],
+            [3, 4]
+        ]
+
+        #expect(vector.count == 2)
+        #expect(matrix.count == 4)
+    }
+
+    @Test
+    func subscripting() {
+        let vector: Vector<Scalar> = [1, 2]
+        let matrix: Matrix<Scalar> = [
+            [1, 2],
+            [3, 4]
+        ]
+
+        #expect(vector[0] == 1)
+        #expect(vector[1] == 2)
+        #expect(matrix[0] == 1)
+        #expect(matrix[1] == 2)
+        #expect(matrix[2] == 3)
+        #expect(matrix[3] == 4)
+    }
+
+    @Test
+    func multiplyScalarByPlusVector() {
+        let vector1: Vector<Scalar> = [1, 2]
+        let scalar: Scalar = 3
+        let vector2: Vector<Scalar> = [4, 5]
+
+        vector1.multiplied(by: scalar, plus: vector2.buffer.baseAddress!)
+        let expectedResults: Vector<Scalar> = [
+            (1 * 3) + 4,
+            (2 * 3) + 5,
+        ]
+
+        #expect(vector2 == expectedResults)
+    }
+
+    @Test
+    func multiplyVectorByPlusVector() {
+        let matrix: Matrix<Scalar> = [
+            [1, 2],
+            [3, 4]
+        ]
+        let vector1: Vector<Scalar> = [5, 6]
+        let vector2: Vector<Scalar> = [7, 8]
+
+        let results = matrix.multiplied(by: vector1, plus: vector2)
+        let expectedResults: Vector<Scalar> = [
+            (1 * 5) + (2 * 6) + 7,
+            (3 * 5) + (4 * 6) + 8,
+        ]
+
+        #expect(results == expectedResults)
+    }
+
+    @Test
+    func unequalVectorsOfDifferentSizes() {
+        let vector1: Vector<Scalar> = [1, 2]
+        let vector2: Vector<Scalar> = [1, 2, 3]
+
+        #expect(vector1 != vector2)
+    }
+
+    @Test
+    func subscriptSetter() {
+        let vector1: Vector<Scalar> = [1, 2]
+        let vector2: Vector<Scalar> = [1, 3]
+        vector1[1] = 3
+
+        #expect(vector1 == vector2)
+    }
+
+    @Test
+    func outerProduct() {
+        let vector1: Vector<Scalar> = [1, 2]
+        let vector2: Vector<Scalar> = [3, 4]
+        let results = vector1.outerProduct(with: vector2)
+        let expectedResults: Matrix<Scalar> = [
+            [1 * 3, 1 * 4],
+            [2 * 3, 2 * 4]
+        ]
+
+        #expect(results == expectedResults)
+    }
+
+    @Test
+    func vectorDescription() async throws {
+        let vector: Vector<Scalar> = [1, 2]
+        #expect("\(vector)" == "Vector<Float>([1.0, 2.0])")
+    }
+
+    @Test
+    func matrixDescription() async throws {
+        let matrix: Matrix<Scalar> = [
+            [1, 2],
+            [3, 4]
+        ]
+        let expectedResults = """
+            Matrix<Float>([
+                [1.0, 2.0],
+                [3.0, 4.0]
+            ])
+            """
+        #expect("\(matrix)" == expectedResults)
+    }
+
+    @Test
+    func matrixInitializerArrayOfArrays() async throws {
+        let matrix1: Matrix<Scalar> = [
+            [1, 2],
+            [3, 4]
+        ]
+        let matrix2 = Matrix<Scalar>([
+            [1, 2],
+            [3, 4]
+        ])
+        #expect(matrix1 == matrix2)
+    }
+
+    @Test
+    func matrixInitializerArray() async throws {
+        let matrix1: Matrix<Scalar> = [
+            [1, 2],
+            [3, 4]
+        ]
+        let matrix2 = Matrix<Scalar>(
+            elements: [
+                1, 2,
+                3, 4
+            ],
+            rows: 2,
+            cols: 2
+        )
+        #expect(matrix1 == matrix2)
+    }
+
+    @Test
+    func matrixSubscriptSetter() async throws {
+        let matrix1: Matrix<Scalar> = [
+            [1, 2],
+            [3, 42]
+        ]
+        let matrix2 = Matrix<Scalar>([
+            [1, 2],
+            [3, 4]
+        ])
+        matrix1[3] = 4
+        #expect(matrix1 == matrix2)
+    }
+
+    @Test
+    func matrixInequality() async throws {
+        let matrix1: Matrix<Scalar> = [
+            [1, 2],
+            [4, 5]
+        ]
+        let matrix2: Matrix<Scalar> = [
+            [1, 2, 3],
+            [4, 5, 6]
+        ]
+        #expect(matrix1 != matrix2)
+    }
 }
 
-struct LinearAlgebraTestsDouble {
+struct DigitRecognitionTestsDouble {
     typealias Scalar = Double
 
     @Test func matrixTimesVector() {
@@ -298,7 +467,7 @@ struct LinearAlgebraTestsDouble {
         let vector1: Vector<Scalar> = [2, 7]
         let vector2: Vector<Scalar> = [4, 2]
         let expectedResult = matrix * vector1 + vector2
-        let result = matrix.multipliedBy(vector1, plus: vector2)
+        let result = matrix.multiplied(by: vector1, plus: vector2)
         #expect(result == expectedResult)
     }
 
@@ -311,5 +480,51 @@ struct LinearAlgebraTestsDouble {
         let expectedResult: Vector<Scalar> = [5, 8]
         let result = a.multiplied(by: b, plus: c)
         #expect(result == expectedResult)
+    }
+
+    @Test
+    func multiplyScalarByPlusVector() {
+        let vector1: Vector<Scalar> = [1, 2]
+        let scalar: Scalar = 3
+        let vector2: Vector<Scalar> = [4, 5]
+
+        vector1.multiplied(by: scalar, plus: vector2.buffer.baseAddress!)
+        let expectedResults: Vector<Scalar> = [
+            (1 * 3) + 4,
+            (2 * 3) + 5,
+        ]
+
+        #expect(vector2 == expectedResults)
+    }
+
+    @Test
+    func multiplyVectorByPlusVector() {
+        let matrix: Matrix<Scalar> = [
+            [1, 2],
+            [3, 4]
+        ]
+        let vector1: Vector<Scalar> = [5, 6]
+        let vector2: Vector<Scalar> = [7, 8]
+
+        let results = matrix.multiplied(by: vector1, plus: vector2)
+        let expectedResults: Vector<Scalar> = [
+            (1 * 5) + (2 * 6) + 7,
+            (3 * 5) + (4 * 6) + 8,
+        ]
+
+        #expect(results == expectedResults)
+    }
+
+    @Test
+    func outerProduct() {
+        let vector1: Vector<Scalar> = [1, 2]
+        let vector2: Vector<Scalar> = [3, 4]
+        let results = vector1.outerProduct(with: vector2)
+        let expectedResults: Matrix<Scalar> = [
+            [1 * 3, 1 * 4],
+            [2 * 3, 2 * 4]
+        ]
+
+        #expect(results == expectedResults)
     }
 }

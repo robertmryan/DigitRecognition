@@ -30,7 +30,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:LinearAlgebraDemo.xctestplan"
+            reference = "container:DigitRecognition.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
@@ -43,6 +43,17 @@
                BlueprintIdentifier = "C42654E12E47E9B400A07B38"
                BuildableName = "LinearAlgebraTests.xctest"
                BlueprintName = "LinearAlgebraTests"
+               ReferencedContainer = "container:DigitRecognition.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C4533F3A2E4E44D700A40E19"
+               BuildableName = "DigitRecognitionTests.xctest"
+               BlueprintName = "DigitRecognitionTests"
                ReferencedContainer = "container:DigitRecognition.xcodeproj">
             </BuildableReference>
          </TestableReference>

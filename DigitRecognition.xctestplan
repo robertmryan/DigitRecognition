@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "AE4A99A3-F592-4352-8F2D-020FF004E7D7",
+      "name" : "Default",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:DigitRecognition.xcodeproj",
+        "identifier" : "C4533F3A2E4E44D700A40E19",
+        "name" : "DigitRecognitionTests"
+      }
+    }
+  ],
+  "version" : 1
+}

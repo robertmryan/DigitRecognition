@@ -86,14 +86,6 @@ final class Matrix<Element: Equatable>: ExpressibleByArrayLiteral {
 }
 
 extension Matrix {
-    func withUnsafeBufferPointer(_ body: (UnsafeBufferPointer<Element>) throws -> Void) rethrows {
-        try body(UnsafeBufferPointer(buffer))
-    }
-
-    func withUnsafeMutableBufferPointer(_ body: (UnsafeMutableBufferPointer<Element>) throws -> Void) rethrows {
-        try body(buffer)
-    }
-
     var count: Int { rows * cols }
 
     subscript(_ index: Int) -> Element {
@@ -175,63 +167,11 @@ extension Matrix where Element == Float {
     /// - Parameters:
     ///   - x: Vector to multiply with this matrix.
     ///   - b: Vector to add to that result.
-    ///   - y: Vector to scale the result by.
-    /// - Returns: The resulting `Vector`. If `y` was provided, this is just a reference to that vector.
-    ///
-    /// - Note: If `y` is supplied, it is mutated to contain the result and the returned reference
-    ///         can be ignored. If a `y` was not supplied, a new vector is returned.
-
-    @discardableResult
-    func multipliedBy(
-        _ x: Vector<Element>,
-        plus b: Vector<Element>,
-        scaledBy y: Vector<Element>
-    ) -> Vector<Element> {
-        precondition(cols == x.count)
-        precondition(rows == b.count)
-
-        // 1. Compute logits z = W * x + b
-        // z shape: (10,)
-        cblas_sgemv(
-            CblasRowMajor,         // ORDER: Specifies row-major (C) or column-major (Fortran) data ordering.
-            CblasNoTrans,          // TRANSA: Specifies whether to transpose matrix A.
-            rows,                  // M: Number of rows in matrix A.
-            cols,                  // N: Number of columns in matrix A.
-            1,                     // ALPHA: Scaling factor for the product of matrix A and vector X.
-            buffer.baseAddress!,   // A: Matrix A.
-            cols,                  // LDA: The size of the first dimension of matrix A. For a matrix A[M][N] that uses column-major ordering, the value is the number of rows M. For a matrix that uses row-major ordering, the value is the number of columns N.
-            x.buffer.baseAddress!, // X: Vector X.
-            1,                     // INCX: Stride within X. For example, if incX is 7, every seventh element is used.
-            0,                     // BETA: Scaling factor for vector Y.
-            y.buffer.baseAddress,  // Y: Vector Y
-            1                      // INCY: Stride within Y. For example, if incY is 7, every seventh element is used.
-        )
-
-        // Add bias
-        vDSP_vadd(
-            b.buffer.baseAddress!,
-            1,
-            y.buffer.baseAddress!,
-            1,
-            y.buffer.baseAddress!,
-            1,
-            vDSP_Length(
-                rows
-            )
-        )
-
-        return y
-    }
-
-    /// Multiply this matrix by x, add b, and scale by y.
-    /// - Parameters:
-    ///   - x: Vector to multiply with this matrix.
-    ///   - b: Vector to add to that result.
     /// - Returns: The resulting `Vector`.
 
     @discardableResult
-    func multipliedBy(
-        _ x: Vector<Element>,
+    func multiplied(
+        by x: Vector<Element>,
         plus b: Vector<Element>,
     ) -> Vector<Element> {
         precondition(cols == x.count)
@@ -264,63 +204,11 @@ extension Matrix where Element == Double {
     /// - Parameters:
     ///   - x: Vector to multiply with this matrix.
     ///   - b: Vector to add to that result.
-    ///   - y: Vector to scale the result by.
-    /// - Returns: The resulting `Vector`. If `y` was provided, this is just a reference to that vector.
-    ///
-    /// - Note: If `y` is supplied, it is mutated to contain the result and the returned reference
-    ///         can be ignored. If a `y` was not supplied, a new vector is returned.
-
-    @discardableResult
-    func multipliedBy(
-        _ x: Vector<Element>,
-        plus b: Vector<Element>,
-        scaledBy y: Vector<Element>
-    ) -> Vector<Element> {
-        precondition(cols == x.count)
-        precondition(rows == b.count)
-
-        // 1. Compute logits z = W * x + b
-        // z shape: (10,)
-        cblas_dgemv(
-            CblasRowMajor,         // ORDER: Specifies row-major (C) or column-major (Fortran) data ordering.
-            CblasNoTrans,          // TRANSA: Specifies whether to transpose matrix A.
-            rows,                  // M: Number of rows in matrix A.
-            cols,                  // N: Number of columns in matrix A.
-            1,                     // ALPHA: Scaling factor for the product of matrix A and vector X.
-            buffer.baseAddress!,   // A: Matrix A.
-            cols,                  // LDA: The size of the first dimension of matrix A. For a matrix A[M][N] that uses column-major ordering, the value is the number of rows M. For a matrix that uses row-major ordering, the value is the number of columns N.
-            x.buffer.baseAddress!, // X: Vector X.
-            1,                     // INCX: Stride within X. For example, if incX is 7, every seventh element is used.
-            0,                     // BETA: Scaling factor for vector Y.
-            y.buffer.baseAddress,  // Y: Vector Y
-            1                      // INCY: Stride within Y. For example, if incY is 7, every seventh element is used.
-        )
-
-        // Add bias
-        vDSP_vaddD(
-            b.buffer.baseAddress!,
-            1,
-            y.buffer.baseAddress!,
-            1,
-            y.buffer.baseAddress!,
-            1,
-            vDSP_Length(
-                rows
-            )
-        )
-
-        return y
-    }
-
-    /// Multiply this matrix by x, add b, and scale by y.
-    /// - Parameters:
-    ///   - x: Vector to multiply with this matrix.
-    ///   - b: Vector to add to that result.
     /// - Returns: The resulting `Vector`.
 
     @discardableResult
-    func multipliedBy(
-        _ x: Vector<Element>,
+    func multiplied(
+        by x: Vector<Element>,
         plus b: Vector<Element>,
     ) -> Vector<Element> {
         precondition(cols == x.count)
@@ -369,7 +257,7 @@ extension Matrix: CustomStringConvertible {
                 }
             }
             if row < rows - 1 {
-                string += "], \n"
+                string += "],\n"
             } else {
                 string += "]\n"
             }

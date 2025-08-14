@@ -7,18 +7,19 @@
 	objects = {
 
 /* Begin PBXContainerItemProxy section */
-		C42654E62E47E9B400A07B38 /* PBXContainerItemProxy */ = {
+		C4533F3F2E4E44D700A40E19 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C42654C52E47BD6100A07B38 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = C42654CC2E47BD6100A07B38;
-			remoteInfo = LinearAlgebraDemo;
+			remoteInfo = DigitRecognition;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		C42654CD2E47BD6100A07B38 /* DigitRecognition.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DigitRecognition.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		C42654E22E47E9B400A07B38 /* LinearAlgebraTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LinearAlgebraTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4533F3B2E4E44D700A40E19 /* DigitRecognitionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DigitRecognitionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4533F442E4E485A00A40E19 /* DigitRecognition.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = DigitRecognition.xctestplan; sourceTree = "<group>"; };
 		C4CCDF9C2E4D5B8B00A92185 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 		C4CCDF9D2E4D5B8B00A92185 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -29,9 +30,9 @@
 			path = DigitRecognition;
 			sourceTree = "<group>";
 		};
-		C42654E32E47E9B400A07B38 /* LinearAlgebraTests */ = {
+		C4533F3C2E4E44D700A40E19 /* DigitRecognitionTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = LinearAlgebraTests;
+			path = DigitRecognitionTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -44,7 +45,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C42654DF2E47E9B400A07B38 /* Frameworks */ = {
+		C4533F382E4E44D700A40E19 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -57,8 +58,9 @@
 		C42654C42E47BD6100A07B38 = {
 			isa = PBXGroup;
 			children = (
+				C4533F442E4E485A00A40E19 /* DigitRecognition.xctestplan */,
 				C42654CF2E47BD6100A07B38 /* DigitRecognition */,
-				C42654E32E47E9B400A07B38 /* LinearAlgebraTests */,
+				C4533F3C2E4E44D700A40E19 /* DigitRecognitionTests */,
 				C42654CE2E47BD6100A07B38 /* Products */,
 				C4CCDF9C2E4D5B8B00A92185 /* LICENSE.md */,
 				C4CCDF9D2E4D5B8B00A92185 /* README.md */,
@@ -69,7 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				C42654CD2E47BD6100A07B38 /* DigitRecognition.app */,
-				C42654E22E47E9B400A07B38 /* LinearAlgebraTests.xctest */,
+				C4533F3B2E4E44D700A40E19 /* DigitRecognitionTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -99,27 +101,27 @@
 			productReference = C42654CD2E47BD6100A07B38 /* DigitRecognition.app */;
 			productType = "com.apple.product-type.application";
 		};
-		C42654E12E47E9B400A07B38 /* LinearAlgebraTests */ = {
+		C4533F3A2E4E44D700A40E19 /* DigitRecognitionTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C42654E82E47E9B400A07B38 /* Build configuration list for PBXNativeTarget "LinearAlgebraTests" */;
+			buildConfigurationList = C4533F412E4E44D700A40E19 /* Build configuration list for PBXNativeTarget "DigitRecognitionTests" */;
 			buildPhases = (
-				C42654DE2E47E9B400A07B38 /* Sources */,
-				C42654DF2E47E9B400A07B38 /* Frameworks */,
-				C42654E02E47E9B400A07B38 /* Resources */,
+				C4533F372E4E44D700A40E19 /* Sources */,
+				C4533F382E4E44D700A40E19 /* Frameworks */,
+				C4533F392E4E44D700A40E19 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				C42654E72E47E9B400A07B38 /* PBXTargetDependency */,
+				C4533F402E4E44D700A40E19 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				C42654E32E47E9B400A07B38 /* LinearAlgebraTests */,
+				C4533F3C2E4E44D700A40E19 /* DigitRecognitionTests */,
 			);
-			name = LinearAlgebraTests;
+			name = DigitRecognitionTests;
 			packageProductDependencies = (
 			);
-			productName = LinearAlgebraTests;
-			productReference = C42654E22E47E9B400A07B38 /* LinearAlgebraTests.xctest */;
+			productName = DigitRecognitionTests;
+			productReference = C4533F3B2E4E44D700A40E19 /* DigitRecognitionTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -135,7 +137,7 @@
 					C42654CC2E47BD6100A07B38 = {
 						CreatedOnToolsVersion = 16.4;
 					};
-					C42654E12E47E9B400A07B38 = {
+					C4533F3A2E4E44D700A40E19 = {
 						CreatedOnToolsVersion = 16.4;
 						TestTargetID = C42654CC2E47BD6100A07B38;
 					};
@@ -156,7 +158,7 @@
 			projectRoot = "";
 			targets = (
 				C42654CC2E47BD6100A07B38 /* DigitRecognition */,
-				C42654E12E47E9B400A07B38 /* LinearAlgebraTests */,
+				C4533F3A2E4E44D700A40E19 /* DigitRecognitionTests */,
 			);
 		};
 /* End PBXProject section */
@@ -169,7 +171,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C42654E02E47E9B400A07B38 /* Resources */ = {
+		C4533F392E4E44D700A40E19 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -186,7 +188,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C42654DE2E47E9B400A07B38 /* Sources */ = {
+		C4533F372E4E44D700A40E19 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -196,10 +198,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		C42654E72E47E9B400A07B38 /* PBXTargetDependency */ = {
+		C4533F402E4E44D700A40E19 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C42654CC2E47BD6100A07B38 /* DigitRecognition */;
-			targetProxy = C42654E62E47E9B400A07B38 /* PBXContainerItemProxy */;
+			targetProxy = C4533F3F2E4E44D700A40E19 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -333,9 +335,10 @@
 				CODE_SIGN_ENTITLEMENTS = "DigitRecognition/Support files/DigitRecognition.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = DWG4C277UK;
+				DEVELOPMENT_TEAM = HQ8TLN3UQR;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Digit Recognition";
@@ -375,9 +378,10 @@
 				CODE_SIGN_ENTITLEMENTS = "DigitRecognition/Support files/DigitRecognition.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = DWG4C277UK;
+				DEVELOPMENT_TEAM = HQ8TLN3UQR;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_TESTABILITY = NO;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Digit Recognition";
@@ -409,18 +413,22 @@
 			};
 			name = Release;
 		};
-		C42654E92E47E9B400A07B38 /* Debug */ = {
+		C4533F422E4E44D700A40E19 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HQ8TLN3UQR;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.robertmryan.LinearAlgebraTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.robertmryan.DigitRecognitionTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -432,7 +440,7 @@
 			};
 			name = Debug;
 		};
-		C42654EA2E47E9B400A07B38 /* Release */ = {
+		C4533F432E4E44D700A40E19 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -443,7 +451,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.robertmryan.LinearAlgebraTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.robertmryan.DigitRecognitionTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -476,11 +484,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C42654E82E47E9B400A07B38 /* Build configuration list for PBXNativeTarget "LinearAlgebraTests" */ = {
+		C4533F412E4E44D700A40E19 /* Build configuration list for PBXNativeTarget "DigitRecognitionTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C42654E92E47E9B400A07B38 /* Debug */,
-				C42654EA2E47E9B400A07B38 /* Release */,
+				C4533F422E4E44D700A40E19 /* Debug */,
+				C4533F432E4E44D700A40E19 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
