@@ -1,6 +1,6 @@
 //
 //  ViewModel.swift
-//  LinearAlgebraDemo
+//  DigitRecognition
 //
 //  Created by Robert Ryan on 8/12/25.
 //
@@ -11,7 +11,10 @@ import Foundation
 class ViewModel: ObservableObject {
     @Published var imageAndLabel: ImageAndLabel
     @Published var progress: Float?
+    @Published var dataSetSuccess: Float?
     @Published var result: [DataPoint] = []
+    @Published var isSuccess: Bool? = true
+    @Published var isMultipleLayers = false
     @Published var error: (any Error)?
     @Published var imagesAndLabels: [ImageAndLabel]?
     @Published var imagesAndLabelsIndex = 0 { didSet { Task { await testModel(priority: .userInitiated) } } }
@@ -74,6 +77,38 @@ class ViewModel: ObservableObject {
         }
     }
 
+    func testEntireDataSet() async {
+        guard let model else { return }
+
+        dataSetSuccess = nil
+
+        let task = Task(priority: .utility) { @MachineLearningModelActor [model] () -> Float? in
+            var successCount = 0
+            var totalCount = 0
+            for imageAndLabel in await imagesAndLabels ?? [] {
+                totalCount += 1
+
+                let inference = model.inference(of: Vector(imageAndLabel.imageBytes.map { Float($0) / 255 }))
+                let inferredDigit = model.category(of: inference)
+                if inferredDigit == imageAndLabel.digit.flatMap({ Int($0) }) {
+                    successCount += 1
+                }
+            }
+
+            return if totalCount > 0 {
+                Float(successCount) / Float(totalCount)
+            } else {
+                nil
+            }
+        }
+
+        dataSetSuccess = await withTaskCancellationHandler {
+            await task.value
+        } onCancel: {
+            task.cancel()
+        }
+    }
+
     func testModel(priority: TaskPriority? = nil) async {
         guard
             let imagesAndLabels,
@@ -89,6 +124,8 @@ class ViewModel: ObservableObject {
         self.imageAndLabel = imageAndLabel
         let imageBytes = imageAndLabel.imageBytes
 
+        let expectedDigit = imageAndLabel.digit.flatMap({ Int($0) })
+
         let x = Vector(imageBytes.map { Float($0) / 255 })
         guard let model else {
             return
@@ -96,9 +133,14 @@ class ViewModel: ObservableObject {
 
         let task = Task(priority: priority) { @MachineLearningModelActor in
             let y = model.inference(of: x)
-            return (0..<10).map { DataPoint(name: "\($0)", value: y[$0]) }
+            let predictedDigit = model.category(of: y)
+            let dataPoints = (0..<10).map { DataPoint(name: "\($0)", value: y[$0]) }
+            return (predictedDigit == expectedDigit, dataPoints)
         }
-        self.result = await task.value
+
+        let (isSuccess, dataPoints) = await task.value
+        self.isSuccess = expectedDigit == nil ? nil : isSuccess
+        self.result = dataPoints
     }
 
     func train() async {
@@ -107,7 +149,7 @@ class ViewModel: ObservableObject {
             progress = 0
             defer { progress = nil }
 
-            let task = Task(priority: .userInitiated) { @MachineLearningModelActor [self] in
+            let task = Task(priority: .userInitiated) { @MachineLearningModelActor [self, isMultipleLayers] in
                 let trainingOutputs: [Vector<Float>] = [
                     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -131,10 +173,14 @@ class ViewModel: ObservableObject {
 
                 let sequence = try await IDXSequence(images: imagesUrl, labels: labelsUrl)
                 let count = sequence.imagesHeader.count
-                let modelColumns = sequence.imagesHeader.countPerItem // 784 for the 28 × 28 image
-                let modelRows = 10                                    // 10
+                let inputSize = sequence.imagesHeader.countPerItem // 784 for the 28 × 28 image
+                let outputSize = 10                                // 10
 
-                let model = SGDSingleLayer(inputVectorSize: modelRows, outputVectorSize: modelColumns)
+                let model: any MachineLearningModel = if isMultipleLayers {
+                    SGDTwoHiddenLayer(inputVectorSize: inputSize, outputVectorSize: outputSize)
+                } else {
+                    SGDSingleLayer(inputVectorSize: inputSize, outputVectorSize: outputSize)
+                }
 
                 var index = 0
 

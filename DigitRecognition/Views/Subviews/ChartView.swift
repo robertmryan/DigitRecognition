@@ -1,6 +1,6 @@
 //
 //  ChartView.swift
-//  LinearAlgebraDemo
+//  DigitRecognition
 //
 //  Created by Robert Ryan on 8/12/25.
 //
@@ -10,6 +10,7 @@ import Charts
 
 struct ChartView: View {
     let chartData: [DataPoint]
+    let isSuccess: Bool?
 
     var body: some View {
         VStack {
@@ -21,6 +22,9 @@ struct ChartView: View {
                     BarMark(
                         x: .value("Name", result.name),
                         y: .value("Score", result.value)
+                    )
+                    .foregroundStyle(
+                        isSuccess == nil ? Color.blue : (isSuccess! ? Color.green : Color.red)
                     )
                 }
             }

@@ -1,6 +1,6 @@
 //
 //  SmoothPolyline.swift
-//  LinearAlgebraDemo
+//  DigitRecognition
 //
 //  Created by Robert Ryan on 8/12/25.
 //

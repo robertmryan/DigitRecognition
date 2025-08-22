@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  LinearAlgebraDemo
+//  DigitRecognition
 //
 //  Created by Robert Ryan on 8/9/25.
 //
@@ -43,8 +43,14 @@ struct ContentView: View {
                         )
                         .frame(width: (geometry.size.width - spacing) / 2)
 
-                        ChartView(chartData: viewModel.result)
-                            .frame(width: (geometry.size.width - spacing) / 2)
+                        VStack {
+                            ChartView(chartData: viewModel.result, isSuccess: viewModel.isSuccess)
+                                .frame(width: (geometry.size.width - spacing) / 2)
+
+                            if let dataSetSuccess = viewModel.dataSetSuccess {
+                                Text("Total accuracy: \(dataSetSuccess, format: .percent.precision(.fractionLength(1)))")
+                            }
+                        }
                     }
                 }
 
@@ -58,15 +64,20 @@ struct ContentView: View {
                 }
             }
 
+            Toggle("Multiple Layers", isOn: $viewModel.isMultipleLayers)
+                .toggleStyle(.checkbox)
+
             Button("Train Model") {
                 Task {
                     await viewModel.train()
+                    await viewModel.testEntireDataSet()
                 }
             }
 
             Button("Test Model") {
                 Task {
                     await viewModel.loadTests()
+                    await viewModel.testEntireDataSet()
                 }
             }
 

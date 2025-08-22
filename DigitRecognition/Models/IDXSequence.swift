@@ -1,6 +1,6 @@
 //
 //  IDXSequence.swift
-//  LinearAlgebraDemo
+//  DigitRecognition
 //
 //  Created by Robert Ryan on 8/9/25.
 //
