@@ -1,6 +1,6 @@
 //
 //  SGDSingleLayer.swift
-//  LinearAlgebraDemo
+//  DigitRecognition
 //
 //  Created by Robert Ryan on 8/9/25.
 //
@@ -16,11 +16,12 @@ final class SGDSingleLayer: MachineLearningModel {    /// The single layer matri
     private let b: Vector<Float>
 
     /// The model’s learning rate
-    let learningRate: Float = 0.01
+    let learningRate: Float
 
-    init(inputVectorSize: Int, outputVectorSize: Int) {
-        w = Matrix<Float>(repeating: 0.01, rows: inputVectorSize, cols: outputVectorSize)
-        b = Vector<Float>(repeating: 0, count: inputVectorSize)
+    init(inputVectorSize: Int, outputVectorSize: Int, learningRate: Float = 0.01) {
+        w = Matrix<Float>(repeating: 0.01, rows: outputVectorSize, cols: inputVectorSize)
+        b = Vector<Float>(repeating: 0, count: outputVectorSize)
+        self.learningRate = learningRate
     }
 }
 

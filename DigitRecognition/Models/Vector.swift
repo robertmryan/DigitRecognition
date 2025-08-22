@@ -273,6 +273,14 @@ extension Vector where Element == Float {
     }
 
     @inlinable
+    func maxValueAndIndex() -> (value: Element, index: Int) {
+        var value: Element = 0
+        var index: Int = 0
+        vDSP_maxvi(buffer.baseAddress!, 1, &value, &index, vDSP_Length(count))
+        return (value, index)
+    }
+
+    @inlinable
     func sum() -> Element {
         var result: Float = 0
         vDSP_sve(buffer.baseAddress!, 1, &result, vDSP_Length(count))
