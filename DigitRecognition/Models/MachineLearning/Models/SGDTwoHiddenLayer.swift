@@ -31,7 +31,7 @@ final class SGDTwoHiddenLayer: MachineLearningModel {
     private let b3: Vector<Float>
 
     // Hyperparameters
-    let learningRate: Float
+    private let learningRate: Float
 
     init(inputVectorSize: Int, hidden1: Int = 512, hidden2: Int = 256, outputVectorSize: Int, learningRate: Float = 0.01) {
         self.inputSize   = inputVectorSize

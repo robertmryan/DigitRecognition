@@ -23,6 +23,8 @@ struct IDXSequence {
     }
 }
 
+// MARK: - AsyncSequence
+
 extension IDXSequence: AsyncSequence, AsyncIteratorProtocol {
     func makeAsyncIterator() -> AsyncIterator {
         AsyncIterator(
@@ -63,6 +65,8 @@ extension IDXSequence: AsyncSequence, AsyncIteratorProtocol {
         }
     }
 }
+
+// MARK: - Private implementation methods
 
 private extension IDXSequence {
     func readHeader(for bytes: inout URL.AsyncBytes.AsyncIterator) async throws -> IDXHeader {
@@ -114,28 +118,8 @@ private extension IDXSequence {
     }
 }
 
-struct IDXRecord {
-    let imageBytes: [UInt8]
-    let labelBytes: [UInt8]
-}
-
-struct IDXHeader {
-    let count: Int
-    let countPerItem: Int
-    let dimensions: UInt8
-    let type: IDXDataType
-    let counts: [Int]
-}
-
-enum IDXDataType: UInt8 {
-    case `unsigned` = 0x08 // unsigned byte
-    case `signed` = 0x09   // signed byte
-    case `short` = 0x0B    // short (2 bytes)
-    case `int` = 0x0C      // int (4 bytes)
-    case `float` = 0x0D    // float (4 bytes)
-    case `double` = 0x0E   // double (8 bytes)
-}
-
-enum IDXError: Error {
-    case missingHeader
+extension IDXSequence {
+    enum IDXError: Error {
+        case missingHeader
+    }
 }

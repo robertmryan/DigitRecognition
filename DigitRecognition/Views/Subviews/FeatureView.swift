@@ -1,5 +1,5 @@
 //
-//  TrainingDataView.swift
+//  FeatureView.swift
 //  DigitRecognition
 //
 //  Created by Robert Ryan on 8/12/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TrainingDataView: View {
+struct FeatureView: View {
     let title: String
     let imageAndLabel: ImageAndLabel
     @Binding var updatedImageAndLabel: ImageAndLabel
@@ -77,7 +77,7 @@ struct TrainingDataView: View {
 
 // MARK: - Private utilities for displaying model parameters
 
-private extension TrainingDataView {
+private extension FeatureView {
     func color(for byte: UInt8) -> Color {
         Color(.sRGB, white: Double(255-byte) / 255, opacity: 1)
     }
@@ -89,7 +89,7 @@ private extension TrainingDataView {
 
 // MARK: - Private utilities for converting strokes to pixel data
 
-private extension TrainingDataView {
+private extension FeatureView {
     private func rasterizeStrokesToMNISTPixels(
         strokes: [Stroke],
         imageSize: CGSize = CGSize(width: 28, height: 28),
@@ -115,10 +115,10 @@ private extension TrainingDataView {
             let ptr = context.data
         else { return }
 
-        let path = path(for: strokes, lineWidth: lineWidth)
+        let path = path(for: strokes)
         let cgPath = path.cgPath
 
-        let t = aspectFitTransform(for: cgPath)
+        let t = aspectFitTransform(for: cgPath, imageStrokeWidth: strokeLineWidth)
 
         context.saveGState(); defer { context.restoreGState() }
         context.concatenate(t)
@@ -149,18 +149,21 @@ private extension TrainingDataView {
     func aspectFitTransform(
         for path: CGPath,
         imageRect: CGRect = CGRect(x: 0, y: 0, width: 28, height: 28),
-        inset: CGFloat = 4
+        inset: CGFloat = 4,
+        imageStrokeWidth: CGFloat
     ) -> CGAffineTransform {
-        let dst = imageRect.insetBy(dx: inset, dy: inset)   // e.g. (4,4,20,20)
         let src = path.boundingBoxOfPath
-        guard src.width > 0, src.height > 0, dst.width > 0, dst.height > 0 else { return .identity }
+        let scale = Swift.max(src.size.width, src.size.height) / Swift.max(imageRect.size.width, imageRect.size.height)
+        let scaledLineWidth = imageStrokeWidth / scale
+        let dest = imageRect.insetBy(dx: inset + scaledLineWidth / 2, dy: inset + scaledLineWidth / 2)   // e.g. (4,4,20,20)
+        guard src.width > 0, src.height > 0, dest.width > 0, dest.height > 0 else { return .identity }
 
-        let s  = min(dst.width / src.width, dst.height / src.height) // uniform
+        let s  = min(dest.width / src.width, dest.height / src.height) // uniform
         let scaled = CGSize(width: src.width * s, height: src.height * s)
 
         // Center inside the *inset* box.
-        let tx = dst.midX - (src.minX * s) - scaled.width  * 0.5
-        let ty = dst.midY - (src.minY * s) - scaled.height * 0.5
+        let tx = dest.midX - (src.minX * s) - scaled.width  * 0.5
+        let ty = dest.midY - (src.minY * s) - scaled.height * 0.5
 
         // Flip Y inside the full image, then place the fitted path.
         return CGAffineTransform(translationX: 0, y: imageRect.maxY)
@@ -169,16 +172,11 @@ private extension TrainingDataView {
             .scaledBy(x: s, y: s)
     }
 
-    func path(for strokes: [Stroke], lineWidth: CGFloat) -> Path {
+    func path(for strokes: [Stroke]) -> Path {
         var path = Path()
 
         for stroke in strokes {
-            guard let firstPoint = stroke.points.first else { continue }
-            path.move(to: firstPoint)
-
-            for point in stroke.points.dropFirst() {
-                path.addLine(to: point)
-            }
+            path.addPath(stroke.points.path())
         }
 
         return path

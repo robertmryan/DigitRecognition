@@ -36,7 +36,7 @@ struct ContentView: View {
 
                 GeometryReader { geometry in
                     HStack(spacing: spacing) {
-                        TrainingDataView(
+                        FeatureView(
                             title: viewModel.dataType,
                             imageAndLabel: viewModel.imageAndLabel,
                             updatedImageAndLabel: $updatedImageAndLabel
@@ -44,7 +44,7 @@ struct ContentView: View {
                         .frame(width: (geometry.size.width - spacing) / 2)
 
                         VStack {
-                            ChartView(chartData: viewModel.result, isSuccess: viewModel.isSuccess)
+                            PredictionView(chartData: viewModel.result, isSuccess: viewModel.isSuccess)
                                 .frame(width: (geometry.size.width - spacing) / 2)
 
                             if let dataSetSuccess = viewModel.dataSetSuccess {

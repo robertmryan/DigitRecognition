@@ -8,7 +8,7 @@
 import SwiftUI
 import Charts
 
-struct ChartView: View {
+struct PredictionView: View {
     let chartData: [DataPoint]
     let isSuccess: Bool?
 
@@ -43,7 +43,7 @@ struct ChartView: View {
     }
 }
 
-private extension ChartView {
+private extension PredictionView {
     func barMarkColor(basedUpon isSuccess: Bool?) -> Color {
         guard let isSuccess else {
             return .blue
