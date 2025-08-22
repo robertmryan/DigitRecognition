@@ -85,6 +85,8 @@ final class Matrix<Element: Equatable>: ExpressibleByArrayLiteral {
     }
 }
 
+// MARK: - Common interfaces
+
 extension Matrix {
     var count: Int { rows * cols }
 
@@ -162,6 +164,8 @@ extension Matrix where Element == Double {
     }
 }
 
+// MARK: - Matrix<Float> implementations
+
 extension Matrix where Element == Float {
     /// Multiply this matrix by x, add b, and scale by y.
     /// - Parameters:
@@ -197,7 +201,55 @@ extension Matrix where Element == Float {
 
         return y
     }
+
+    /// Compute v = W^T * u, where W is (out, in), u is (out), result is (in).
+    func transposeMultiply(_ u: Vector<Float>) -> Vector<Float> {
+        precondition(u.count == rows)
+
+        let alpha: Float = 1
+        let beta:  Float = 0
+
+        let v = Vector<Float>(repeating: 0, count: cols)
+        cblas_sgemv(
+            CblasRowMajor,         // matches your storage (row-major)
+            CblasTrans,            // we want W^T * u
+            rows,                  // m = rows of A (W)
+            cols,                  // n = cols of A (W)
+            alpha,
+            buffer.baseAddress!,   // A
+            cols,                  // lda = number of columns in row-major
+            u.buffer.baseAddress!, // x
+            1,                     // incx
+            beta,
+            v.buffer.baseAddress!, // y
+            1                      // incy
+        )
+        return v
+    }
+
+    func rowWiseUpdate(
+        delta: Vector<Float>,
+        prevAct: Vector<Float>,
+        learningRate: Float
+    ) {
+        let alpha: Float = -learningRate
+        // y := alpha * x * y^T + A
+        cblas_sger(
+            CblasRowMajor,
+            rows,                        // m
+            cols,                        // n
+            alpha,
+            delta.buffer.baseAddress!,   // x
+            1,                           // incx
+            prevAct.buffer.baseAddress!, // y
+            1,                           // incy
+            buffer.baseAddress!,
+            cols                         // A, lda = cols for row-major
+        )
+    }
 }
+
+// MARK: - Matrix<Double> implementations
 
 extension Matrix where Element == Double {
     /// Multiply this matrix by x, add b, and scale by y.
@@ -236,6 +288,8 @@ extension Matrix where Element == Double {
     }
 }
 
+// MARK: - Equatable
+
 extension Matrix: Equatable where Element: Equatable {
     // Equatable conformance:
     static func == (lhs: Matrix<Element>, rhs: Matrix<Element>) -> Bool {
@@ -243,6 +297,8 @@ extension Matrix: Equatable where Element: Equatable {
         return lhs.buffer.elementsEqual(rhs.buffer)
     }
 }
+
+// MARK: - CustomStringConvertible
 
 extension Matrix: CustomStringConvertible {
     var description: String {

@@ -73,7 +73,11 @@ struct TrainingDataView: View {
                 .font(.title2)
         }
     }
+}
 
+// MARK: - Private utilities for displaying model parameters
+
+private extension TrainingDataView {
     func color(for byte: UInt8) -> Color {
         Color(.sRGB, white: Double(255-byte) / 255, opacity: 1)
     }
@@ -81,7 +85,11 @@ struct TrainingDataView: View {
     func label(for byte: UInt8) -> String {
         digits[Int(byte)]
     }
+}
 
+// MARK: - Private utilities for converting strokes to pixel data
+
+private extension TrainingDataView {
     private func rasterizeStrokesToMNISTPixels(
         strokes: [Stroke],
         imageSize: CGSize = CGSize(width: 28, height: 28),

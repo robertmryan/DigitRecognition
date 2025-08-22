@@ -23,9 +23,7 @@ struct ChartView: View {
                         x: .value("Name", result.name),
                         y: .value("Score", result.value)
                     )
-                    .foregroundStyle(
-                        isSuccess == nil ? Color.blue : (isSuccess! ? Color.green : Color.red)
-                    )
+                    .foregroundStyle(barMarkColor(basedUpon: isSuccess))
                 }
             }
             .chartYScale(domain: 0.0 ... 1.0)
@@ -41,6 +39,20 @@ struct ChartView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+private extension ChartView {
+    func barMarkColor(basedUpon isSuccess: Bool?) -> Color {
+        guard let isSuccess else {
+            return .blue
+        }
+
+        if isSuccess {
+            return .green
+        } else {
+            return .red
         }
     }
 }

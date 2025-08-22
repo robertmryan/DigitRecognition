@@ -57,12 +57,16 @@ final class Vector<Element>: ExpressibleByArrayLiteral {
     }
 }
 
+// MARK: - Equatable conformance
+
 extension Vector: Equatable where Element: Equatable {
     static func == (lhs: Vector<Element>, rhs: Vector<Element>) -> Bool {
         guard lhs.count == rhs.count else { return false }
         return lhs.buffer.elementsEqual(rhs.buffer)
     }
 }
+
+// MARK: - Subscript access
 
 extension Vector {
     subscript(_ index: Int) -> Element {
@@ -349,6 +353,54 @@ extension Vector where Element == Float {
             vDSP_Length(count)           // N:  The number of elements that the function processes.
         )
     }
+
+    /// In-place Hadamard product: self[i] *= other[i]
+    func formMultiplyInPlace(by other: Vector<Float>) {
+        precondition(self.count == other.count)
+        vDSP_vmul(
+            buffer.baseAddress!,
+            1,
+            other.buffer.baseAddress!,
+            1,
+            buffer.baseAddress!,
+            1,
+            vDSP_Length(count)
+        )
+    }
+
+    /// Rectified linear unit.
+    ///
+    /// Returns a NEW vector: out[i] = max(0, self[i])
+
+    func relu() -> Vector<Float> {
+        let result = Vector<Float>(repeating: 0, count: count)
+        var zero: Float = 0
+        vDSP_vthres(
+            buffer.baseAddress!,
+            1,
+            &zero,
+            result.buffer.baseAddress!,
+            1,
+            vDSP_Length(count)
+        )
+        return result
+    }
+
+    /// ReLU prime
+    ///
+    /// First derivative of rectified linear unit function.
+    ///
+    /// Returns a NEW vector of ReLU'(z): 1 if z[i] > 0 else 0
+    ///
+    /// - Note: Most of these functions leverage Accelerate, but there isn’t a good stand-in for
+    ///         this function, and the compiler will tend to do a pretty good job optimizing and
+    ///         vectorizing this naive implementation.
+
+    func reluPrime() -> Vector<Float> {
+        let out = Vector<Float>(repeating: 0, count: count)
+        for i in 0..<count { out[i] = self[i] > 0 ? 1 : 0 }
+        return out
+    }
 }
 
 // MARK: - Vector<Double> implementations
@@ -481,6 +533,8 @@ extension Vector where Element == Double {
     }
 }
 
+// MARK: - Sequence conformance
+
 extension Vector: Sequence {
     func makeIterator() -> Iterator {
         return Iterator(vector: self)
@@ -501,6 +555,8 @@ extension Vector: Sequence {
         }
     }
 }
+
+// MARK: - CustomStringConvertible
 
 extension Vector: CustomStringConvertible {
     var description: String {
