@@ -14,6 +14,7 @@ struct ContentView: View {
     @StateObject var viewModel = ViewModel()
     @FocusState private var focusedField: Field?
     @State var updatedImageAndLabel: ImageAndLabel
+    @State var elapsed: Duration?
 
     init() {
         updatedImageAndLabel = ImageAndLabel(imageBytes: Array(repeating: 0, count: 28 * 28), digit: nil)
@@ -69,7 +70,9 @@ struct ContentView: View {
 
             Button("Train Model") {
                 Task {
+                    let start = ContinuousClock.now
                     await viewModel.train()
+                    elapsed = ContinuousClock.now - start
                     await viewModel.testEntireDataSet()
                 }
             }
@@ -77,12 +80,16 @@ struct ContentView: View {
             Button("Test Model") {
                 Task {
                     await viewModel.loadTests()
+                    let start = ContinuousClock.now
                     await viewModel.testEntireDataSet()
+                    elapsed = ContinuousClock.now - start
                 }
             }
 
             if let progress = viewModel.progress {
                 ProgressView(value: progress)
+            } else if let elapsed {
+                Text("\(elapsed.seconds, format: .number.precision(.fractionLength(1))) seconds")
             }
         }
         .padding()

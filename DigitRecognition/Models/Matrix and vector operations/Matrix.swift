@@ -94,6 +94,11 @@ extension Matrix {
         get { buffer[index] }
         set { buffer[index] = newValue }
     }
+
+    subscript(_ row: Int, _ col: Int) -> Element {
+        get { buffer[row * cols + col] }
+        set { buffer[row * cols + col] = newValue }
+    }
 }
 
 // MARK: - Matrix<Float> Operators
