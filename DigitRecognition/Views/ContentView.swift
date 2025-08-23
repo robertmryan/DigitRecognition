@@ -65,8 +65,13 @@ struct ContentView: View {
                 }
             }
 
-            Toggle("Multiple Layers", isOn: $viewModel.isMultipleLayers)
-                .toggleStyle(.checkbox)
+            HStack {
+                Text("Multiple Layers")
+                Toggle("", isOn: $viewModel.isMultipleLayers)
+                    .labelsHidden()
+                    .toggleStyle(CompactCheckboxStyle())
+                    .fixedSize()
+            }
 
             Button("Train Model") {
                 Task {

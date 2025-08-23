@@ -18,10 +18,10 @@ It features:
  * Loading testing traditional dataset of 10,000 images to test the effectiveness of the training.
  * After either loading or training, press right and left buttons to scroll through the dataset, visualizing (a) a blown up rendition of the image on the left; and (b) the categorization of the inference in a bar chart on the right.
  * Once trained, you can draw on the 28×28 grid and tap the “Process” button and it will show you the inference results (as a probability of which category the image falls).
+ * When drawing your own handwritten character for recognition, it will translate the drawn figure for geometric center of the stroke(s). The MNIST pipeline for inputs apparently entails rendering the handwritten character as a 20×20 image that has been geometrically-centered (!) within a 28×28 image. The conversion of our handwritten characters employs a similar pipeline to get meaningful benchmark for how well the model recognizes our handwriting.
 
 Open items:
 
- * When drawing your own handwritten character for recognition, it is highly dependent based upon where you drew the character. This is currently doing a basic scale/translate, but (a) it should be refined for linewidth; and (b) it should translate for geometric center of the stroke. The MNIST pipeline for inputs apparently entails rendering the handwritten character as a 20×20 image that has been geometrically-centered (!) within a 28×28 image. The conversion of our handwritten characters should adopt the same pipeline to get meaningful benchmark for how well the model recognizes our handwriting.
  * Implement a CNN model and see how accuracy improves. Existing single layer is about 90% accurate. With two hidden ReLU layers, this improved to 96%.
  * Identify possibly better datasets. E.g., the original MNIST dataset used here performs notoriously badly with “4”s (as the dataset has a serious underrepresentation of “4”s that are closed at the top) and “7”s.
 
