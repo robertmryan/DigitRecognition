@@ -49,7 +49,7 @@ struct ContentView: View {
                                 .frame(width: (geometry.size.width - spacing) / 2)
 
                             if let dataSetSuccess = viewModel.dataSetSuccess {
-                                Text("Total accuracy: \(dataSetSuccess, format: .percent.precision(.fractionLength(1)))")
+                                Text("Total accuracy: \(dataSetSuccess, format: .percent.precision(.fractionLength(1))) in \(viewModel.dataType)")
                             }
                         }
                     }
@@ -65,27 +65,21 @@ struct ContentView: View {
                 }
             }
 
-            HStack {
-                Text("Multiple Layers")
-                Toggle("", isOn: $viewModel.isMultipleLayers)
-                    .labelsHidden()
-                    .toggleStyle(CompactCheckboxStyle())
-                    .fixedSize()
-            }
+            ModelPicker(modelType: $viewModel.modelType)
 
-            Button("Train Model") {
+            Button("Load Training Dataset") {
                 Task {
                     let start = ContinuousClock.now
                     await viewModel.train()
-                    elapsed = ContinuousClock.now - start
                     await viewModel.testEntireDataSet()
+                    elapsed = ContinuousClock.now - start
                 }
             }
 
-            Button("Test Model") {
+            Button("Load Testing Dataset") {
                 Task {
-                    await viewModel.loadTests()
                     let start = ContinuousClock.now
+                    await viewModel.loadTests()
                     await viewModel.testEntireDataSet()
                     elapsed = ContinuousClock.now - start
                 }
@@ -94,7 +88,7 @@ struct ContentView: View {
             if let progress = viewModel.progress {
                 ProgressView(value: progress)
             } else if let elapsed {
-                Text("\(elapsed.seconds, format: .number.precision(.fractionLength(1))) seconds")
+                Text("\(elapsed.seconds, format: .number.precision(.fractionLength(1))) seconds for \(viewModel.imagesAndLabels!.count) images")
             }
         }
         .padding()

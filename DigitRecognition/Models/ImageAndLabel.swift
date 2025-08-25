@@ -15,8 +15,8 @@ struct ImageAndLabel: Hashable {
     let digit: UInt8?
 }
 
-extension ImageAndLabel {
-    func image() -> CGImage? {
+extension Collection where Element == UInt8 {
+    func image(inverting: Bool = true) -> CGImage? {
         let colorSpace = CGColorSpaceCreateDeviceGray()
         let bytesPerPixel = 1
         let bytesPerRow = 28 * bytesPerPixel
@@ -43,12 +43,20 @@ extension ImageAndLabel {
             count: width * height
         )
 
-        for (index, byte) in imageBytes.enumerated() {
-            buffer[index] = 255 - byte
+        for (index, byte) in enumerated() {
+            buffer[index] = inverting ? 255 - byte : byte
+//            print("\(buffer[index]), ", terminator: "")
         }
 
+//        print("")
 
         return context.makeImage()
+    }
+}
+
+extension ImageAndLabel {
+    func image(inverting: Bool = true) -> CGImage? {
+        imageBytes.image()
     }
 
     static let example = ImageAndLabel(imageBytes: [

@@ -14,6 +14,8 @@ import Foundation
 ///   - Updates write per-output row with a scaled copy of the input activation.
 
 final class SGDTwoHiddenLayer: MachineLearningModel {
+    let requiresOnDeviceTraining = true
+
     // Layer sizes
     let inputSize: Int
     let hidden1: Int

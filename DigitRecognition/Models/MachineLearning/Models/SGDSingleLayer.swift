@@ -10,6 +10,9 @@ import Foundation
 /// Single layer model with Stochastic Gradient Descent.
 
 final class SGDSingleLayer: MachineLearningModel {    /// The single layer matrix underpinning this model
+    let requiresOnDeviceTraining = true
+
+    /// The matrix that encompasses this single layer perceptron
     private let w: Matrix<Float>
 
     /// The model’s current bias vector

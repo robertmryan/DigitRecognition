@@ -14,21 +14,33 @@ class ViewModel: ObservableObject {
     @Published var dataSetSuccess: Float?
     @Published var result: [DataPoint] = []
     @Published var isSuccess: Bool? = true
-    @Published var isMultipleLayers = false
     @Published var error: (any Error)?
     @Published var imagesAndLabels: [ImageAndLabel]?
     @Published var imagesAndLabelsIndex = 0 { didSet { Task { await testModel(priority: .userInitiated) } } }
     @Published var dataType = "Not Started"
+    @Published var modelType: ModelType = .singleLayerPerceptron {
+        didSet {
+            Task {
+                try await updateModel(to: modelType)
+            }
+        }
+    }
 
+    @MachineLearningModelActor
     private var model: (any MachineLearningModel)?
 
     init() {
         imageAndLabel = ImageAndLabel(imageBytes: Array(repeating: 0, count: 28 * 28), digit: nil) // an empty image
     }
 
+    @MachineLearningModelActor
+    func updateModel(to type: ModelType) async throws {
+        model = try type.model()
+    }
+
     func loadTests() async {
         do {
-            dataType = "Testing Data"
+            dataType = "Testing Dataset"
 
             guard
                 let imagesUrl = Bundle.main.url(forResource: "t10k-images", withExtension: "idx3-ubyte"),
@@ -77,21 +89,32 @@ class ViewModel: ObservableObject {
         }
     }
 
+    var testingTask: Task<Float?, Never>?
+    var trainingTask: Task<(), any Error>?
+
     func testEntireDataSet() async {
-        guard let model else { return }
-
         dataSetSuccess = nil
+        progress = 0
+        defer { progress = nil }
 
-        let task = Task(priority: .utility) { @MachineLearningModelActor [model] () -> Float? in
+        trainingTask?.cancel()
+        testingTask?.cancel()
+
+        let task = Task(priority: .utility) { @MachineLearningModelActor () -> Float? in
+            guard let model else { return nil }
+
             var successCount = 0
-            var totalCount = 0
-            for imageAndLabel in await imagesAndLabels ?? [] {
-                totalCount += 1
-
-                let inference = model.inference(of: Vector(imageAndLabel.imageBytes.map { Float($0) / 255 }))
+            let imagesAndLabels = await imagesAndLabels ?? []
+            let totalCount = imagesAndLabels.count
+            for imageAndLabel in imagesAndLabels {
+                let inference = await model.inference(of: Vector(imageAndLabel.imageBytes.map { Float($0) / 255 }))
                 let inferredDigit = model.category(of: inference)
                 if inferredDigit == imageAndLabel.digit.flatMap({ Int($0) }) {
                     successCount += 1
+                }
+                Task { @MainActor [successCount] in
+                    self.imageAndLabel = imageAndLabel
+                    self.progress = Float(successCount) / Float(totalCount)
                 }
             }
 
@@ -101,6 +124,7 @@ class ViewModel: ObservableObject {
                 nil
             }
         }
+        testingTask = task
 
         dataSetSuccess = await withTaskCancellationHandler {
             await task.value
@@ -127,29 +151,38 @@ class ViewModel: ObservableObject {
         let expectedDigit = imageAndLabel.digit.flatMap({ Int($0) })
 
         let x = Vector(imageBytes.map { Float($0) / 255 })
-        guard let model else {
-            return
-        }
 
-        let task = Task(priority: priority) { @MachineLearningModelActor in
-            let y = model.inference(of: x)
+        let task = Task(priority: priority) { @MachineLearningModelActor () -> (Bool, [DataPoint])? in
+            guard let model else {
+                return nil
+            }
+
+            let y = await model.inference(of: x)
             let predictedDigit = model.category(of: y)
             let dataPoints = (0..<10).map { DataPoint(name: "\($0)", value: y[$0]) }
             return (predictedDigit == expectedDigit, dataPoints)
         }
 
-        let (isSuccess, dataPoints) = await task.value
-        self.isSuccess = expectedDigit == nil ? nil : isSuccess
-        self.result = dataPoints
+        if let (isSuccess, dataPoints) = await task.value {
+            self.isSuccess = expectedDigit == nil ? nil : isSuccess
+            self.result = dataPoints
+        }
     }
 
     func train() async {
         do {
-            dataType = "Training Data"
+            dataType = "Training Dataset"
             progress = 0
             defer { progress = nil }
 
-            let task = Task(priority: .userInitiated) { @MachineLearningModelActor [self, isMultipleLayers] in
+            trainingTask?.cancel()
+            testingTask?.cancel()
+
+            let task = Task(priority: .userInitiated) { @MachineLearningModelActor [self, modelType] in
+                if model == nil {
+                    model = try modelType.model()
+                }
+
                 let trainingOutputs: [Vector<Float>] = [
                     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -173,14 +206,6 @@ class ViewModel: ObservableObject {
 
                 let sequence = try await IDXSequence(images: imagesUrl, labels: labelsUrl)
                 let count = sequence.imagesHeader.count
-                let inputSize = sequence.imagesHeader.countPerItem // 784 for the 28 × 28 image
-                let outputSize = 10                                // 10
-
-                let model: any MachineLearningModel = if isMultipleLayers {
-                    SGDTwoHiddenLayer(inputVectorSize: inputSize, outputVectorSize: outputSize)
-                } else {
-                    SGDSingleLayer(inputVectorSize: inputSize, outputVectorSize: outputSize)
-                }
 
                 var index = 0
 
@@ -194,10 +219,11 @@ class ViewModel: ObservableObject {
                     let digit = Int(record.labelBytes.first!)
                     imagesAndLabels.append(ImageAndLabel(imageBytes: record.imageBytes, digit: record.labelBytes.first!))
 
-                    let x = Vector(imageBytes)
-                    let t = trainingOutputs[digit]
-                    model.train(x: x, t: t)
-
+                    if model!.requiresOnDeviceTraining {
+                        let x = Vector(imageBytes)
+                        let t = trainingOutputs[digit]
+                        model!.train(x: x, t: t)
+                    }
                     let progress = Float(index) / Float(count)
 
                     try Task.checkCancellation()
@@ -213,8 +239,9 @@ class ViewModel: ObservableObject {
                     // }
                 }
 
-                await update(model: model, imagesAndLabels: imagesAndLabels)
+                await update(imagesAndLabels: imagesAndLabels)
             }
+            trainingTask = task
 
             try await withTaskCancellationHandler {
                 try await task.value
@@ -226,8 +253,7 @@ class ViewModel: ObservableObject {
         }
     }
 
-    func update(model: sending any MachineLearningModel, imagesAndLabels: sending [ImageAndLabel]) {
-        self.model = model
+    func update(imagesAndLabels: sending [ImageAndLabel]) {
         self.imagesAndLabels = imagesAndLabels
         self.imagesAndLabelsIndex = 0
     }

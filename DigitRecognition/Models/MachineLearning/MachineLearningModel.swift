@@ -23,7 +23,9 @@ protocol MachineLearningModel: Sendable {
     /// - Parameter x: An input vector.
     /// - Returns: An output vector.
 
-    func inference(of x: Vector<Float>) -> Vector<Float>
+    func inference(of x: Vector<Float>) async -> Vector<Float>
+
+    var requiresOnDeviceTraining: Bool { get }
 }
 
 extension MachineLearningModel {
@@ -40,4 +42,31 @@ extension MachineLearningModel {
 actor MachineLearningModelActor {
     static let shared = MachineLearningModelActor()
     private init() { }
+}
+
+enum ModelType: CaseIterable, Identifiable {
+    case singleLayerPerceptron
+    case multiLayerPerceptron
+    case convolutionalNeuralNetwork
+
+    var id: Self { self }
+}
+
+extension ModelType {
+    var label: String {
+        switch self {
+            case .singleLayerPerceptron:      "Single Layer Perceptron"
+            case .multiLayerPerceptron:       "Multi Layer Perceptron"
+            case .convolutionalNeuralNetwork: "Convolutional Neural Network"
+        }
+    }
+
+    @MachineLearningModelActor
+    func model() throws -> MachineLearningModel {
+        switch self {
+            case .singleLayerPerceptron:       SGDSingleLayer(inputVectorSize: 28 * 28, outputVectorSize: 10)
+            case .multiLayerPerceptron:        SGDTwoHiddenLayer(inputVectorSize: 28 * 28, outputVectorSize: 10)
+            case .convolutionalNeuralNetwork:  try MNISTSmallCNN()
+        }
+    }
 }
