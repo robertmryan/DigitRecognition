@@ -19,10 +19,19 @@
 /* Begin PBXFileReference section */
 		C42654CD2E47BD6100A07B38 /* DigitRecognition.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DigitRecognition.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4533F3B2E4E44D700A40E19 /* DigitRecognitionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DigitRecognitionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C4533F442E4E485A00A40E19 /* DigitRecognition.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = DigitRecognition.xctestplan; sourceTree = "<group>"; };
 		C4CCDF9C2E4D5B8B00A92185 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 		C4CCDF9D2E4D5B8B00A92185 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		C4AAFEBE2E5E35A800F8CB73 /* Exceptions for "Testing" folder in "DigitRecognitionTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				DigitRecognitionTests/DigitRecognitionTests.swift,
+			);
+			target = C4533F3A2E4E44D700A40E19 /* DigitRecognitionTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		C42654CF2E47BD6100A07B38 /* DigitRecognition */ = {
@@ -30,9 +39,12 @@
 			path = DigitRecognition;
 			sourceTree = "<group>";
 		};
-		C4533F3C2E4E44D700A40E19 /* DigitRecognitionTests */ = {
+		C4AAFEBA2E5E359000F8CB73 /* Testing */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = DigitRecognitionTests;
+			exceptions = (
+				C4AAFEBE2E5E35A800F8CB73 /* Exceptions for "Testing" folder in "DigitRecognitionTests" target */,
+			);
+			path = Testing;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -58,9 +70,8 @@
 		C42654C42E47BD6100A07B38 = {
 			isa = PBXGroup;
 			children = (
-				C4533F442E4E485A00A40E19 /* DigitRecognition.xctestplan */,
+				C4AAFEBA2E5E359000F8CB73 /* Testing */,
 				C42654CF2E47BD6100A07B38 /* DigitRecognition */,
-				C4533F3C2E4E44D700A40E19 /* DigitRecognitionTests */,
 				C42654CE2E47BD6100A07B38 /* Products */,
 				C4CCDF9C2E4D5B8B00A92185 /* LICENSE.md */,
 				C4CCDF9D2E4D5B8B00A92185 /* README.md */,
@@ -113,9 +124,6 @@
 			);
 			dependencies = (
 				C4533F402E4E44D700A40E19 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				C4533F3C2E4E44D700A40E19 /* DigitRecognitionTests */,
 			);
 			name = DigitRecognitionTests;
 			packageProductDependencies = (
@@ -419,7 +427,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = HQ8TLN3UQR;
+				DEVELOPMENT_TEAM = UZAPXQTVQ4;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -446,7 +454,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = HQ8TLN3UQR;
+				DEVELOPMENT_TEAM = UZAPXQTVQ4;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
