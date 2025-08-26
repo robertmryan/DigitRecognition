@@ -17,7 +17,6 @@ struct FeatureView: View {
     @State private var strokes: [Stroke] = []
     @State private var currentPoints: [CGPoint] = []
 
-    let columns = Array(repeating: GridItem(.flexible(), spacing: 1), count: featureDimension)
     private let digits = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]
 
     var body: some View {
@@ -57,6 +56,7 @@ struct FeatureView: View {
                 let totalSpacing = spacing * CGFloat(featureDimension - 1)
                 let cellSize = CGFloat(Int((min(geometry.size.width, geometry.size.height) - totalSpacing) / CGFloat(featureDimension)))
                 let totalSize = cellSize * CGFloat(featureDimension) + totalSpacing
+                let columns = Array(repeating: GridItem(.fixed(cellSize), spacing: 1), count: featureDimension)
 
                 ZStack {
                     LazyVGrid(columns: columns, spacing: spacing) {

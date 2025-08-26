@@ -65,30 +65,40 @@ struct ContentView: View {
                 }
             }
 
-            ModelPicker(modelType: $viewModel.modelType)
-
-            Button("Load Training Dataset") {
-                Task {
-                    let start = ContinuousClock.now
-                    await viewModel.train()
-                    await viewModel.testEntireDataSet()
-                    elapsed = ContinuousClock.now - start
-                }
-            }
-
-            Button("Load Testing Dataset") {
-                Task {
-                    let start = ContinuousClock.now
-                    await viewModel.loadTests()
-                    await viewModel.testEntireDataSet()
-                    elapsed = ContinuousClock.now - start
-                }
-            }
-
             if let progress = viewModel.progress {
                 ProgressView(value: progress)
             } else if let elapsed {
                 Text("\(elapsed.seconds, format: .number.precision(.fractionLength(1))) seconds for \(viewModel.imagesAndLabels!.count) images")
+            }
+
+            HStack {
+                Spacer()
+
+                ModelPicker(modelType: $viewModel.modelType)
+
+                Spacer()
+
+                Button("Load Training Dataset") {
+                    Task {
+                        let start = ContinuousClock.now
+                        await viewModel.train()
+                        await viewModel.testEntireDataSet()
+                        elapsed = ContinuousClock.now - start
+                    }
+                }
+
+                Spacer()
+
+                Button("Load Testing Dataset") {
+                    Task {
+                        let start = ContinuousClock.now
+                        await viewModel.loadTests()
+                        await viewModel.testEntireDataSet()
+                        elapsed = ContinuousClock.now - start
+                    }
+                }
+
+                Spacer()
             }
         }
         .padding()

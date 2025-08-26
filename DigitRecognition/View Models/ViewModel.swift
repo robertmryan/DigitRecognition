@@ -131,6 +131,8 @@ class ViewModel: ObservableObject {
         } onCancel: {
             task.cancel()
         }
+
+        imagesAndLabelsIndex = 0
     }
 
     func testModel(priority: TaskPriority? = nil) async {
@@ -248,6 +250,8 @@ class ViewModel: ObservableObject {
             } onCancel: {
                 task.cancel()
             }
+
+            self.imagesAndLabelsIndex = 0
         } catch {
             self.error = error
         }
