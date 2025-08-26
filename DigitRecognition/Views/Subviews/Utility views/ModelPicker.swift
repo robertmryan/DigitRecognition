@@ -13,11 +13,9 @@ struct ModelPicker: View {
     var body: some View {
         Picker(selection: $modelType) {
             ForEach(ModelType.allCases) { model in
-                Text(model.label).tag(model)
+                Text(model.shortLabel).tag(model)
             }
-        } label: {
-            Text("Model:")
-        }
+        } label: { }
         .pickerStyle(.menu)
         .fixedSize()
     }

@@ -48,8 +48,6 @@ extension Collection where Element == UInt8 {
 //            print("\(buffer[index]), ", terminator: "")
         }
 
-//        print("")
-
         return context.makeImage()
     }
 }

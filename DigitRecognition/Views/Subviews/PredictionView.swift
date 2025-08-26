@@ -9,8 +9,16 @@ import SwiftUI
 import Charts
 
 struct PredictionView: View {
-    let chartData: [DataPoint]
-    let isSuccess: Bool?
+//    let chartData: [DataPoint]
+//    let isSuccess: Bool?
+//    let progress: Float?
+//    let elapsed: Duration?
+//    let count: Int?
+    @Binding var chartData: [DataPoint]
+    @Binding var isSuccess: Bool?
+    @Binding var progress: Float?
+    @Binding var elapsed: Duration?
+    @Binding var imagesAndLabels: [ImageAndLabel]?
 
     var body: some View {
         VStack {
@@ -38,6 +46,12 @@ struct PredictionView: View {
                         }
                     }
                 }
+            }
+
+            if let progress = progress {
+                ProgressView(value: progress)
+            } else if let elapsed {
+                Text("\(elapsed.seconds, format: .number.precision(.fractionLength(1))) seconds for \(imagesAndLabels!.count) images")
             }
         }
     }

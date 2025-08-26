@@ -11,8 +11,7 @@ private let featureDimension = 28
 private let strokeLineWidth: CGFloat = 2
 
 struct FeatureView: View {
-    let title: String
-    let imageAndLabel: ImageAndLabel
+    @Binding var imageAndLabel: ImageAndLabel
     @Binding var updatedImageAndLabel: ImageAndLabel
     @State private var strokes: [Stroke] = []
     @State private var currentPoints: [CGPoint] = []
@@ -21,9 +20,6 @@ struct FeatureView: View {
 
     var body: some View {
         VStack {
-            Text(title)
-                .font(.title)
-
             HStack {
                 DrawingActionButton("Undo") {
                     _ = strokes.popLast()
@@ -52,7 +48,6 @@ struct FeatureView: View {
 
             GeometryReader { geometry in
                 let spacing: CGFloat = 1
-                let lineWidth: CGFloat = 0
                 let totalSpacing = spacing * CGFloat(featureDimension - 1)
                 let cellSize = CGFloat(Int((min(geometry.size.width, geometry.size.height) - totalSpacing) / CGFloat(featureDimension)))
                 let totalSize = cellSize * CGFloat(featureDimension) + totalSpacing
@@ -63,11 +58,9 @@ struct FeatureView: View {
                         ForEach(0 ..< imageAndLabel.imageBytes.count, id: \.self) { index in
                             Rectangle()
                                 .fill(color(for: imageAndLabel.imageBytes[index]))
-                                .strokeBorder(Color(.sRGB, white: 0.5, opacity: 1), lineWidth: lineWidth)
                                 .frame(width: cellSize, height: cellSize)
                         }
                     }
-                    .border(Color(.sRGB, white: 0.5, opacity: 1), width: lineWidth * 2)
                     .frame(width: totalSize, height: totalSize)
 
                     DrawingView(
@@ -79,7 +72,7 @@ struct FeatureView: View {
             }
 
             Text(imageAndLabel.digit.flatMap { label(for: $0) } ?? "Unknown")
-                .font(.title2)
+                .font(.caption)
         }
     }
 }

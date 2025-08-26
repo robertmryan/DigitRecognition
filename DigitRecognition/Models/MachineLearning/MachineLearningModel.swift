@@ -53,7 +53,15 @@ enum ModelType: CaseIterable, Identifiable {
 }
 
 extension ModelType {
-    var label: String {
+    var shortLabel: String {
+        switch self {
+            case .singleLayerPerceptron:      "SLP"
+            case .multiLayerPerceptron:       "MLP"
+            case .convolutionalNeuralNetwork: "CNN"
+        }
+    }
+
+    var longLabel: String {
         switch self {
             case .singleLayerPerceptron:      "Single Layer Perceptron"
             case .multiLayerPerceptron:       "Multi Layer Perceptron"

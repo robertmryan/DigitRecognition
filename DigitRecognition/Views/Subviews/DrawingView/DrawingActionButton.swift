@@ -19,8 +19,8 @@ struct DrawingActionButton: View {
     var body: some View {
         Button(action: action) {
             Text(text)
-                .padding(.horizontal, 24)
-                .padding(.vertical, 12)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
                 .background(Color(.sRGB, white: 0.25, opacity: 1))
                 .clipShape(Capsule())
         }

@@ -36,17 +36,23 @@ struct ContentView: View {
                 }
 
                 GeometryReader { geometry in
-                    HStack(spacing: spacing) {
+                    let size = sizeOfFeatureView(in: geometry.size)
+
+                    AdaptiveStack(spacing: spacing) {
                         FeatureView(
-                            title: viewModel.dataType,
-                            imageAndLabel: viewModel.imageAndLabel,
+                            imageAndLabel: $viewModel.imageAndLabel,
                             updatedImageAndLabel: $updatedImageAndLabel
                         )
-                        .frame(width: (geometry.size.width - spacing) / 2)
+                        .frame(width: size.width, height: size.height)
 
                         VStack {
-                            PredictionView(chartData: viewModel.result, isSuccess: viewModel.isSuccess)
-                                .frame(width: (geometry.size.width - spacing) / 2)
+                            PredictionView(
+                                chartData: $viewModel.result,
+                                isSuccess: $viewModel.isSuccess,
+                                progress: $viewModel.progress,
+                                elapsed: $elapsed,
+                                imagesAndLabels: $viewModel.imagesAndLabels
+                            )
 
                             if let dataSetSuccess = viewModel.dataSetSuccess {
                                 Text("Total accuracy: \(dataSetSuccess, format: .percent.precision(.fractionLength(1))) in \(viewModel.dataType)")
@@ -65,12 +71,6 @@ struct ContentView: View {
                 }
             }
 
-            if let progress = viewModel.progress {
-                ProgressView(value: progress)
-            } else if let elapsed {
-                Text("\(elapsed.seconds, format: .number.precision(.fractionLength(1))) seconds for \(viewModel.imagesAndLabels!.count) images")
-            }
-
             HStack {
                 Spacer()
 
@@ -78,7 +78,7 @@ struct ContentView: View {
 
                 Spacer()
 
-                Button("Load Training Dataset") {
+                Button("Training") {
                     Task {
                         let start = ContinuousClock.now
                         await viewModel.train()
@@ -86,10 +86,11 @@ struct ContentView: View {
                         elapsed = ContinuousClock.now - start
                     }
                 }
+                .disabled(viewModel.modelType == .convolutionalNeuralNetwork)
 
                 Spacer()
 
-                Button("Load Testing Dataset") {
+                Button("Testing") {
                     Task {
                         let start = ContinuousClock.now
                         await viewModel.loadTests()
@@ -119,6 +120,14 @@ struct ContentView: View {
         }
         .task(id: updatedImageAndLabel) {
             await viewModel.testModel(for: updatedImageAndLabel)
+        }
+    }
+
+    func sizeOfFeatureView(in size: CGSize) -> CGSize {
+        if size.width > size.height {
+            return CGSize(width: min(size.height * 0.9, size.width * 2 / 3), height: size.height)
+        } else {
+            return CGSize(width: size.width, height: min((size.width / 1) + 90, size.height * 2 / 3))
         }
     }
 
