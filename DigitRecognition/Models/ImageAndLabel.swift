@@ -13,6 +13,15 @@ import CoreGraphics
 struct ImageAndLabel: Hashable {
     let imageBytes: [UInt8]
     let digit: UInt8?
+
+    init(imageBytes: [UInt8], digit: UInt8?) {
+        self.imageBytes = imageBytes
+        self.digit = digit
+    }
+
+    init() {
+        self.init(imageBytes: Array(repeating: 0, count: 28 * 28), digit: nil)
+    }
 }
 
 extension Collection where Element == UInt8 {

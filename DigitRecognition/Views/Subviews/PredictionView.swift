@@ -9,11 +9,6 @@ import SwiftUI
 import Charts
 
 struct PredictionView: View {
-//    let chartData: [DataPoint]
-//    let isSuccess: Bool?
-//    let progress: Float?
-//    let elapsed: Duration?
-//    let count: Int?
     @Binding var chartData: [DataPoint]
     @Binding var isSuccess: Bool?
     @Binding var progress: Float?

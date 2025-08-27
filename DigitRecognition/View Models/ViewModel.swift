@@ -25,17 +25,22 @@ class ViewModel: ObservableObject {
             }
         }
     }
+    @Published var isTrained = false
 
     @MachineLearningModelActor
     private var model: (any MachineLearningModel)?
 
     init() {
-        imageAndLabel = ImageAndLabel(imageBytes: Array(repeating: 0, count: 28 * 28), digit: nil) // an empty image
+        imageAndLabel = ImageAndLabel()
     }
 
     @MachineLearningModelActor
     func updateModel(to type: ModelType) async throws {
         model = try type.model()
+        Task { @MainActor in
+            isTrained = type == .convolutionalNeuralNetwork
+            imageAndLabel = ImageAndLabel()
+        }
     }
 
     func loadTests() async {
@@ -252,6 +257,7 @@ class ViewModel: ObservableObject {
             }
 
             self.imagesAndLabelsIndex = 0
+            self.isTrained = true
         } catch {
             self.error = error
         }

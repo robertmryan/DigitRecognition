@@ -69,6 +69,14 @@ extension ModelType {
         }
     }
 
+    var imageName: String {
+        switch self {
+            case .singleLayerPerceptron:      "slp"
+            case .multiLayerPerceptron:       "mlp"
+            case .convolutionalNeuralNetwork: "cnn"
+        }
+    }
+
     @MachineLearningModelActor
     func model() throws -> MachineLearningModel {
         switch self {

@@ -13,12 +13,9 @@ let poi = OSSignposter(subsystem: "SGDSingleLayer", category: .pointsOfInterest)
 struct ContentView: View {
     @StateObject var viewModel = ViewModel()
     @FocusState private var focusedField: Field?
-    @State var updatedImageAndLabel: ImageAndLabel
+    @State var updatedImageAndLabel: ImageAndLabel = ImageAndLabel()
     @State var elapsed: Duration?
-
-    init() {
-        updatedImageAndLabel = ImageAndLabel(imageBytes: Array(repeating: 0, count: 28 * 28), digit: nil)
-    }
+    @State var presentModelView = false
 
     let columns = Array(repeating: GridItem(.flexible(), spacing: 1), count: 28)
     let spacing: CGFloat = 20
@@ -72,13 +69,20 @@ struct ContentView: View {
             }
 
             HStack {
-                Spacer()
-
                 ModelPicker(modelType: $viewModel.modelType)
 
+                Button(action: {
+                    presentModelView = true
+                }) {
+                    Image(systemName: "info.circle.fill")
+                        .imageScale(.large)   // adjust size
+                        .foregroundColor(.blue) // optional color
+                }
+                .buttonStyle(.plain)
+
                 Spacer()
 
-                Button("Training") {
+                Button(viewModel.modelType == .convolutionalNeuralNetwork ? "Training Data" : "Train") {
                     Task {
                         let start = ContinuousClock.now
                         await viewModel.train()
@@ -86,11 +90,10 @@ struct ContentView: View {
                         elapsed = ContinuousClock.now - start
                     }
                 }
-                .disabled(viewModel.modelType == .convolutionalNeuralNetwork)
 
                 Spacer()
 
-                Button("Testing") {
+                Button("Test") {
                     Task {
                         let start = ContinuousClock.now
                         await viewModel.loadTests()
@@ -98,8 +101,7 @@ struct ContentView: View {
                         elapsed = ContinuousClock.now - start
                     }
                 }
-
-                Spacer()
+                .disabled(!viewModel.isTrained)
             }
         }
         .padding()
@@ -120,6 +122,11 @@ struct ContentView: View {
         }
         .task(id: updatedImageAndLabel) {
             await viewModel.testModel(for: updatedImageAndLabel)
+        }
+        .sheet(isPresented: $presentModelView) {
+            presentModelView = false
+        } content: {
+            ModelView(modelType: $viewModel.modelType)
         }
     }
 
