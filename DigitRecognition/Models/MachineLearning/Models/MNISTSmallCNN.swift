@@ -52,7 +52,7 @@ final class MNISTSmallCNN: MachineLearningModel {
     }
 
     func inference(of x: Vector<Float>) async -> Vector<Float> {
-        let results = Vector<Float>(repeating: 0, count: 10)
+        var results = Vector<Float>(repeating: 0, count: 10)
 
         let bytes = Array(x.buffer).map { UInt8($0 * 255) }
         let pixelBuffer = bytes.withUnsafeBytes { pointer in
@@ -73,7 +73,7 @@ final class MNISTSmallCNN: MachineLearningModel {
         for probability in probabilities {
             if let index = Int(probability.key) {
                 let value = probability.value.floatValue
-                results.buffer[index] = value
+                results[index] = value
             }
         }
 
@@ -81,7 +81,7 @@ final class MNISTSmallCNN: MachineLearningModel {
     }
 
     func inferenceSlow(of x: Vector<Float>) async -> Vector<Float> {
-        let results = Vector<Float>(repeating: 0, count: 10)
+        var results = Vector<Float>(repeating: 0, count: 10)
 
         let bytes = Array(x.buffer).map { UInt8($0 * 255) }
         guard
@@ -103,7 +103,7 @@ final class MNISTSmallCNN: MachineLearningModel {
         for probability in probabilities {
             if let index = Int(probability.key) {
                 let value = probability.value.floatValue
-                results.buffer[index] = value
+                results[index] = value
             }
         }
 

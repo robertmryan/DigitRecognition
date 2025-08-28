@@ -30,7 +30,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:DigitRecognition.xctestplan"
+            reference = "container:Testing/DigitRecognition.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>

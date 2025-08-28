@@ -23,14 +23,14 @@ final class SGDTwoHiddenLayer: MachineLearningModel {
     let outputSize: Int
 
     // Weights and biases: shapes (out, in) and (out)
-    private let W1: Matrix<Float>
-    private let b1: Vector<Float>
+    private var W1: Matrix<Float>
+    private var b1: Vector<Float>
 
-    private let W2: Matrix<Float>
-    private let b2: Vector<Float>
+    private var W2: Matrix<Float>
+    private var b2: Vector<Float>
 
-    private let W3: Matrix<Float>
-    private let b3: Vector<Float>
+    private var W3: Matrix<Float>
+    private var b3: Vector<Float>
 
     // Hyperparameters
     private let learningRate: Float
@@ -79,28 +79,28 @@ extension SGDTwoHiddenLayer {
         let delta3 = y - t                           // (output)
 
         // Hidden2 gradient: delta2 = (W3^T * delta3) ⊙ relu'(z2)
-        let delta2 = W3.transposeMultiply(delta3)    // (hidden2)
+        var delta2 = W3.transposeMultiply(delta3)    // (hidden2)
         delta2.formMultiplyInPlace(by: z2.reluPrime())
 
         // Hidden1 gradient: delta1 = (W2^T * delta2) ⊙ relu'(z1)
-        let delta1 = W2.transposeMultiply(delta2)    // (hidden1)
+        var delta1 = W2.transposeMultiply(delta2)    // (hidden1)
         delta1.formMultiplyInPlace(by: z1.reluPrime())
 
         // ---- SGD Updates ----
         // W3 rows update: W3[j, :] -= lr * (delta3[j] * a2[:])
         W3.rowWiseUpdate(delta: delta3, prevAct: a2, learningRate: learningRate)
         // b3 -= lr * delta3
-        delta3.multiplied(by: -learningRate, plus: b3.buffer.baseAddress!)
+        delta3.multipliedInPlace(by: -learningRate, plus: &b3)
 
         // W2 rows update
         W2.rowWiseUpdate(delta: delta2, prevAct: a1, learningRate: learningRate)
         // b2 -= lr * delta2
-        delta2.multiplied(by: -learningRate, plus: b2.buffer.baseAddress!)
+        delta2.multipliedInPlace(by: -learningRate, plus: &b2)
 
         // W1 rows update
         W1.rowWiseUpdate(delta: delta1, prevAct: x,  learningRate: learningRate)
         // b1 -= lr * delta1
-        delta1.multiplied(by: -learningRate, plus: b1.buffer.baseAddress!)
+        delta1.multipliedInPlace(by: -learningRate, plus: &b1)
     }
 
     func inference(of x: Vector<Float>) -> Vector<Float> {

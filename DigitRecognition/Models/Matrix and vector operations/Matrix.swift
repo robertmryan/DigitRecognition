@@ -9,19 +9,15 @@ import Accelerate
 
 /// Matrix
 ///
-/// We are using Accelerate framework (notably cBLAS and vDSP) for matrix calculations.
-/// While there is a new vDSP interface (e.g., `vDsp.mmul` rather than the old `vDSP_mmul`,
-/// to enjoy the cBLAS performance, we really need to use `UnsafeMutableBufferPointer`.
-/// So, to simplify our call points, this will store the supplied array of values in a manually
-/// allocated `UnsafeMutableBufferPointer` and clean it up in `deinit`.
+/// We are using Accelerate framework (notably cBLAS and vDSP) for vector/matrix calculations.
 ///
-/// The backing storage here is obviously a simple linear buffer, so we’ll capture the number
-/// of rows and columns so we ensure correct usage of this type with the appropriate preconditions.
+/// The backing storage here is obviously a simple array, so we’ll capture the number of rows
+/// and columns so we ensure correct usage of this type with the appropriate preconditions.
 
-final class Matrix<Element: Equatable>: ExpressibleByArrayLiteral {
+struct Matrix<Element: Equatable>: ExpressibleByArrayLiteral {
     let rows: Int
     let cols: Int
-    let buffer: UnsafeMutableBufferPointer<Element>
+    fileprivate(set) var buffer: Array<Element>
 
     init(_ elements: [[Element]]) {
         self.rows = elements.count
@@ -29,15 +25,9 @@ final class Matrix<Element: Equatable>: ExpressibleByArrayLiteral {
 
         let count = rows * cols
 
-        // Flatten 2D array into 1D array
-        let flatElements = elements.flatMap { $0 }
+        buffer = elements.flatMap { $0 }
 
-        precondition(flatElements.count == count, "All rows must have same number of columns")
-
-        let ptr = UnsafeMutablePointer<Element>.allocate(capacity: count)
-        ptr.initialize(from: flatElements, count: count) // bulk initialize
-
-        self.buffer = UnsafeMutableBufferPointer(start: ptr, count: count)
+        precondition(buffer.count == count, "All rows must have same number of columns")
     }
 
     init(elements: [Element], rows: Int, cols: Int) {
@@ -45,47 +35,26 @@ final class Matrix<Element: Equatable>: ExpressibleByArrayLiteral {
 
         self.rows = rows
         self.cols = cols
-
-        let ptr = UnsafeMutablePointer<Element>.allocate(capacity: elements.count)
-        // Initialize elements from input array
-        ptr.initialize(from: elements, count: elements.count)
-        self.buffer = UnsafeMutableBufferPointer(start: ptr, count: elements.count)
+        self.buffer = elements
     }
 
-    init(repeating: Element, rows: Int, cols: Int) {
+    init(repeating element: Element, rows: Int, cols: Int) {
         self.rows = rows
         self.cols = cols
-        let count = rows * cols
-
-        let ptr = UnsafeMutablePointer<Element>.allocate(capacity: count)
-        ptr.initialize(repeating: repeating, count: count)
-        self.buffer = UnsafeMutableBufferPointer(start: ptr, count: count)
+        buffer = .init(repeating: element, count: rows * cols)
     }
 
     init(arrayLiteral elements: [Element]...) {
-        self.rows = elements.count
-        self.cols = elements[0].count
+        rows = elements.count
+        cols = elements[0].count
 
-        let count = rows * cols
+        buffer = elements.flatMap { $0 }
 
-        // Flatten 2D array into 1D array
-        let flatElements = elements.flatMap { $0 }
-
-        precondition(flatElements.count == count, "All rows must have same number of columns")
-
-        let ptr = UnsafeMutablePointer<Element>.allocate(capacity: count)
-        ptr.initialize(from: flatElements, count: count) // bulk initialize
-
-        self.buffer = UnsafeMutableBufferPointer(start: ptr, count: count)
-    }
-
-    deinit {
-        buffer.baseAddress?.deinitialize(count: buffer.count)
-        buffer.baseAddress?.deallocate()
+        precondition(buffer.count == count, "All rows must have same number of columns")
     }
 }
 
-// MARK: - Common interfaces
+// MARK: - Generic interfaces
 
 extension Matrix {
     var count: Int { rows * cols }
@@ -99,37 +68,27 @@ extension Matrix {
         get { buffer[row * cols + col] }
         set { buffer[row * cols + col] = newValue }
     }
+
+    @inlinable
+    mutating func withUnsafeMutableBufferPointer<R, E>(_ body: (inout UnsafeMutableBufferPointer<Element>) throws(E) -> R) throws(E) -> R where E : Error {
+        try buffer.withUnsafeMutableBufferPointer(body)
+    }
 }
 
 // MARK: - Matrix<Float> Operators
 
 extension Matrix where Element == Float {
-    static func * (lhs: Matrix<Element>, rhs: Vector<Element>) -> Vector<Element> {
-        precondition(lhs.cols == rhs.count)
-
-        let result = Vector<Element>(repeating: 0, count: lhs.rows)
-        vDSP_mmul(
-            lhs.buffer.baseAddress!, 1,    // A is m × p
-            rhs.buffer.baseAddress!, 1,    // B is p × n
-            result.buffer.baseAddress!, 1, // C is m × n
-            vDSP_Length(lhs.rows),         // m
-            1,                             // n
-            vDSP_Length(lhs.cols)          // p
-        )
-        return result
-    }
-
     static func * (lhs: Matrix<Element>, rhs: Matrix<Element>) -> Matrix<Element> {
         precondition(lhs.cols == rhs.rows)
 
-        let result = Matrix<Element>(repeating: 0, rows: lhs.rows, cols: rhs.cols)
+        var result = Matrix<Element>(repeating: 0, rows: lhs.rows, cols: rhs.cols)
         vDSP_mmul(
-            lhs.buffer.baseAddress!, 1,    // A is m × p
-            rhs.buffer.baseAddress!, 1,    // B is p × n
-            result.buffer.baseAddress!, 1, // C is m × n
-            vDSP_Length(lhs.rows),         // m
-            vDSP_Length(rhs.cols),         // n
-            vDSP_Length(lhs.cols)          // p
+            lhs.buffer, 1,         // A is m × p
+            rhs.buffer, 1,         // B is p × n
+            &result.buffer, 1,     // C is m × n
+            vDSP_Length(lhs.rows), // m
+            vDSP_Length(rhs.cols), // n
+            vDSP_Length(lhs.cols)  // p
         )
         return result
     }
@@ -138,32 +97,17 @@ extension Matrix where Element == Float {
 // MARK: - Matrix<Double> operators
 
 extension Matrix where Element == Double {
-    static func * (lhs: Matrix<Element>, rhs: Vector<Element>) -> Vector<Element> {
-        precondition(lhs.cols == rhs.count)
-
-        let result = Vector<Element>(repeating: 0, count: lhs.rows)
-        vDSP_mmulD(
-            lhs.buffer.baseAddress!, 1,    // A is m × p
-            rhs.buffer.baseAddress!, 1,    // B is p × n
-            result.buffer.baseAddress!, 1, // C is m × n
-            vDSP_Length(lhs.rows),         // m
-            1,                             // n
-            vDSP_Length(lhs.cols)          // p
-        )
-        return result
-    }
-
     static func * (lhs: Matrix<Element>, rhs: Matrix<Element>) -> Matrix<Element> {
         precondition(lhs.cols == rhs.rows)
 
-        let result = Matrix<Element>(repeating: 0, rows: lhs.rows, cols: rhs.cols)
+        var result = Matrix<Element>(repeating: 0, rows: lhs.rows, cols: rhs.cols)
         vDSP_mmulD(
-            lhs.buffer.baseAddress!, 1,    // A is m × p
-            rhs.buffer.baseAddress!, 1,    // B is p × n
-            result.buffer.baseAddress!, 1, // C is m × n
-            vDSP_Length(lhs.rows),         // m
-            vDSP_Length(rhs.cols),         // n
-            vDSP_Length(lhs.cols)          // p
+            lhs.buffer, 1,         // A is m × p
+            rhs.buffer, 1,         // B is p × n
+            &result.buffer, 1,     // C is m × n
+            vDSP_Length(lhs.rows), // m
+            vDSP_Length(rhs.cols), // n
+            vDSP_Length(lhs.cols)  // p
         )
         return result
     }
@@ -172,67 +116,7 @@ extension Matrix where Element == Double {
 // MARK: - Matrix<Float> implementations
 
 extension Matrix where Element == Float {
-    /// Multiply this matrix by x, add b, and scale by y.
-    /// - Parameters:
-    ///   - x: Vector to multiply with this matrix.
-    ///   - b: Vector to add to that result.
-    /// - Returns: The resulting `Vector`.
-
-    @discardableResult
-    func multiplied(
-        by x: Vector<Element>,
-        plus b: Vector<Element>,
-    ) -> Vector<Element> {
-        precondition(cols == x.count)
-        precondition(rows == b.count)
-
-        // 1. Compute logits z = W * x + b
-        // z shape: (10,)
-        let y = Vector(b)
-        cblas_sgemv(
-            CblasRowMajor,         // ORDER: Specifies row-major (C) or column-major (Fortran) data ordering.
-            CblasNoTrans,          // TRANSA: Specifies whether to transpose matrix A.
-            rows,                  // M: Number of rows in matrix A.
-            cols,                  // N: Number of columns in matrix A.
-            1,                     // ALPHA: Scaling factor for the product of matrix A and vector X.
-            buffer.baseAddress!,   // A: Matrix A.
-            cols,                  // LDA: The size of the first dimension of matrix A. For a matrix A[M][N] that uses column-major ordering, the value is the number of rows M. For a matrix that uses row-major ordering, the value is the number of columns N.
-            x.buffer.baseAddress!, // X: Vector X.
-            1,                     // INCX: Stride within X. For example, if incX is 7, every seventh element is used.
-            1,                     // BETA: Scaling factor for vector Y.
-            y.buffer.baseAddress,  // Y: Vector Y
-            1                      // INCY: Stride within Y. For example, if incY is 7, every seventh element is used.
-        )
-
-        return y
-    }
-
-    /// Compute v = W^T * u, where W is (out, in), u is (out), result is (in).
-    func transposeMultiply(_ u: Vector<Float>) -> Vector<Float> {
-        precondition(u.count == rows)
-
-        let alpha: Float = 1
-        let beta:  Float = 0
-
-        let v = Vector<Float>(repeating: 0, count: cols)
-        cblas_sgemv(
-            CblasRowMajor,         // matches your storage (row-major)
-            CblasTrans,            // we want W^T * u
-            rows,                  // m = rows of A (W)
-            cols,                  // n = cols of A (W)
-            alpha,
-            buffer.baseAddress!,   // A
-            cols,                  // lda = number of columns in row-major
-            u.buffer.baseAddress!, // x
-            1,                     // incx
-            beta,
-            v.buffer.baseAddress!, // y
-            1                      // incy
-        )
-        return v
-    }
-
-    func rowWiseUpdate(
+    mutating func rowWiseUpdate(
         delta: Vector<Float>,
         prevAct: Vector<Float>,
         learningRate: Float
@@ -241,55 +125,16 @@ extension Matrix where Element == Float {
         // y := alpha * x * y^T + A
         cblas_sger(
             CblasRowMajor,
-            rows,                        // m
-            cols,                        // n
+            rows,           // m
+            cols,           // n
             alpha,
-            delta.buffer.baseAddress!,   // x
-            1,                           // incx
-            prevAct.buffer.baseAddress!, // y
-            1,                           // incy
-            buffer.baseAddress!,
-            cols                         // A, lda = cols for row-major
+            delta.buffer,   // x
+            1,              // incx
+            prevAct.buffer, // y
+            1,              // incy
+            &buffer,
+            cols            // A, lda = cols for row-major
         )
-    }
-}
-
-// MARK: - Matrix<Double> implementations
-
-extension Matrix where Element == Double {
-    /// Multiply this matrix by x, add b, and scale by y.
-    /// - Parameters:
-    ///   - x: Vector to multiply with this matrix.
-    ///   - b: Vector to add to that result.
-    /// - Returns: The resulting `Vector`.
-
-    @discardableResult
-    func multiplied(
-        by x: Vector<Element>,
-        plus b: Vector<Element>,
-    ) -> Vector<Element> {
-        precondition(cols == x.count)
-        precondition(rows == b.count)
-
-        // 1. Compute logits z = W * x + b
-        // z shape: (10,)
-        let y = Vector(b)
-        cblas_dgemv(
-            CblasRowMajor,         // ORDER: Specifies row-major (C) or column-major (Fortran) data ordering.
-            CblasNoTrans,          // TRANSA: Specifies whether to transpose matrix A.
-            rows,                  // M: Number of rows in matrix A.
-            cols,                  // N: Number of columns in matrix A.
-            1,                     // ALPHA: Scaling factor for the product of matrix A and vector X.
-            buffer.baseAddress!,   // A: Matrix A.
-            cols,                  // LDA: The size of the first dimension of matrix A. For a matrix A[M][N] that uses column-major ordering, the value is the number of rows M. For a matrix that uses row-major ordering, the value is the number of columns N.
-            x.buffer.baseAddress!, // X: Vector X.
-            1,                     // INCX: Stride within X. For example, if incX is 7, every seventh element is used.
-            1,                     // BETA: Scaling factor for vector Y.
-            y.buffer.baseAddress,  // Y: Vector Y
-            1                      // INCY: Stride within Y. For example, if incY is 7, every seventh element is used.
-        )
-
-        return y
     }
 }
 
@@ -325,5 +170,51 @@ extension Matrix: CustomStringConvertible {
         }
         string += "])"
         return string
+    }
+}
+
+// MARK: - Vector<Float> implementations
+
+// While this is a `Vector` method, it is updating the internal `buffer`
+// of a matrix. Thus, that’s why it is here.
+
+extension Vector where Element == Float {
+    @inlinable
+    func outerProduct(with b: Vector<Element>) -> Matrix<Element> {
+        precondition(count == b.count)
+
+        var result = Matrix<Element>(repeating: 0, rows: count, cols: b.count)
+        vDSP_mmul(
+            buffer, 1,                     // A is m × p (i.e., m × 1)
+            b.buffer, 1,                   // B is p × n (i.e., 1 × n)
+            &result.buffer, 1,             // C is m × n (i.e., m × n)
+            vDSP_Length(count),            // m
+            vDSP_Length(b.count),          // n
+            vDSP_Length(1)                 // p
+        )
+        return result
+    }
+}
+
+// MARK: - Vector<Double> implementations
+
+// While this is a `Vector` method, it is updating the internal `buffer`
+// of a matrix. Thus, that’s why it is here.
+
+extension Vector where Element == Double {
+    @inlinable
+    func outerProduct(with b: Vector<Element>) -> Matrix<Element> {
+        precondition(count == b.count)
+
+        var result = Matrix<Element>(repeating: 0, rows: count, cols: b.count)
+        vDSP_mmulD(
+            buffer, 1,            // A is m × p (i.e., m × 1)
+            b.buffer, 1,          // B is p × n (i.e., 1 × n)
+            &result.buffer, 1,    // C is m × n (i.e., m × n)
+            vDSP_Length(count),   // m
+            vDSP_Length(b.count), // n
+            vDSP_Length(1)        // p
+        )
+        return result
     }
 }

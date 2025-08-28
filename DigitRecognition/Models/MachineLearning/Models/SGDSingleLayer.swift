@@ -13,7 +13,7 @@ final class SGDSingleLayer: MachineLearningModel {    /// The single layer matri
     let requiresOnDeviceTraining = true
 
     /// The matrix that encompasses this single layer perceptron
-    private let w: Matrix<Float>
+    private var w: Matrix<Float>
 
     /// The model’s current bias vector
     private let b: Vector<Float>
@@ -44,24 +44,27 @@ extension SGDSingleLayer {
         let y = z.softmax()
 
         // 3. Compute error (y - t)
-        let error = y - t
+        var error = y - t
 
         // 4. Compute gradient for W: grad_W = error * x^T
         // grad_W shape: (10, 784)
         // We'll do outer product of error (10,) and x (784,)
         // Update weights: W = W - learningRate * grad_W
-        for i in 0..<numClasses {
-            let gradRowStart = i * inputSize
-            let gradRowStartAddress = w.buffer.baseAddress!.advanced(by: gradRowStart)
-            // grad_W[i, :] = error[i] * x[:]
-            let scaledX = x * error[i]
 
-            // W[i, :] -= learningRate * grad_W[i, :]
-            scaledX.multiplied(by: -learningRate, plus: gradRowStartAddress)
+        w.withUnsafeMutableBufferPointer { pointer in
+            for i in 0..<numClasses {
+                let gradRowStart = i * inputSize
+                let gradRowStartAddress = pointer.baseAddress! + gradRowStart
+                // grad_W[i, :] = error[i] * x[:]
+                let scaledX = x * error[i]
+
+                // W[i, :] -= learningRate * grad_W[i, :]
+                scaledX.multipliedInPlace(by: -learningRate, plus: gradRowStartAddress)
+            }
         }
 
         // 5. Update bias: b = b - learningRate * error
-        error.multiplied(by: -learningRate, plus: b.buffer.baseAddress!)
+        error = error.multiplied(by: -learningRate, plus: b)
     }
 
     func inference(of x: Vector<Float>) -> Vector<Float> {

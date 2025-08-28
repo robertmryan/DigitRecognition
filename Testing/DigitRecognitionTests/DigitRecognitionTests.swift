@@ -194,13 +194,13 @@ struct DigitRecognitionTestsFloat {
         let scalar: Scalar = 3
         let vector2: Vector<Scalar> = [4, 5]
 
-        vector1.multiplied(by: scalar, plus: vector2.buffer.baseAddress!)
+        let result = vector1.multiplied(by: scalar, plus: vector2)
         let expectedResults: Vector<Scalar> = [
             (1 * 3) + 4,
             (2 * 3) + 5,
         ]
 
-        #expect(vector2 == expectedResults)
+        #expect(result == expectedResults)
     }
 
     @Test
@@ -231,7 +231,7 @@ struct DigitRecognitionTestsFloat {
 
     @Test
     func subscriptSetter() {
-        let vector1: Vector<Scalar> = [1, 2]
+        var vector1: Vector<Scalar> = [1, 2]
         let vector2: Vector<Scalar> = [1, 3]
         vector1[1] = 3
 
@@ -304,7 +304,7 @@ struct DigitRecognitionTestsFloat {
 
     @Test
     func matrixSubscriptSetter() async throws {
-        let matrix1: Matrix<Scalar> = [
+        var matrix1: Matrix<Scalar> = [
             [1, 2],
             [3, 42]
         ]
@@ -488,13 +488,13 @@ struct DigitRecognitionTestsDouble {
         let scalar: Scalar = 3
         let vector2: Vector<Scalar> = [4, 5]
 
-        vector1.multiplied(by: scalar, plus: vector2.buffer.baseAddress!)
+        let result = vector1.multiplied(by: scalar, plus: vector2)
         let expectedResults: Vector<Scalar> = [
             (1 * 3) + 4,
             (2 * 3) + 5,
         ]
 
-        #expect(vector2 == expectedResults)
+        #expect(result == expectedResults)
     }
 
     @Test
