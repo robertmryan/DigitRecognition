@@ -124,17 +124,17 @@ struct ContentView: View {
             await viewModel.testModel(for: updatedImageAndLabel)
         }
         .sheet(isPresented: $presentModelView) {
-            presentModelView = false
-        } content: {
             ModelView(modelType: $viewModel.modelType)
+                .presentationSizing(.fitted)
+                .presentationDragIndicator(.visible)
         }
     }
 
     func sizeOfFeatureView(in size: CGSize) -> CGSize {
         if size.width > size.height {
-            return CGSize(width: min(size.height * 0.9, size.width * 2 / 3), height: size.height)
+            CGSize(width: min(size.height * 0.9, size.width * 2 / 3), height: size.height)
         } else {
-            return CGSize(width: size.width, height: min((size.width / 1) + 90, size.height * 2 / 3))
+            CGSize(width: size.width, height: min((size.width / 1) + 90, size.height * 2 / 3))
         }
     }
 

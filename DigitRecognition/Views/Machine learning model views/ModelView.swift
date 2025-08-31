@@ -19,6 +19,7 @@ struct ModelView: View {
         VStack {
             Text(modelType.longLabel)
                 .font(.title)
+                .padding()
 
             Image(imageNames[shownImage])
                 .resizable()
